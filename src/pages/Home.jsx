@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import '../styles/Home.css'
@@ -18,6 +18,10 @@ const Home = () => {
   const [showTitle1, setShowTitle1] = useState(false)
   const [showTitle2, setShowTitle2] = useState(false)
   const [showButton, setShowButton] = useState(false)
+
+  // y축 바운싱(5vh) 키프레임과 기본 트랜지션
+  const bobbingY = useMemo(() => ["0vh", "-5vh", "0vh"], [])
+  const bobT = useMemo(() => ({ y: { duration: 4, ease: "easeInOut", repeat: Infinity } }), [])
 
   // comments.txt 내용
   const commentsText = `def cook_with_ai(ingredients)
@@ -53,12 +57,10 @@ print(cook_with_ai([
 ]))`
 
   useEffect(() => {
-    // 애니메이션 타이밍 설정
     const timer1 = setTimeout(() => setShowImages(true), 1000)
     const timer2 = setTimeout(() => setShowTitle1(true), 3000)
     const timer3 = setTimeout(() => setShowTitle2(true), 4000)
     const timer4 = setTimeout(() => setShowButton(true), 5000)
-
     return () => {
       clearTimeout(timer1)
       clearTimeout(timer2)
@@ -74,7 +76,7 @@ print(cook_with_ai([
   return (
     <div className="home-container">
       {/* 배경 이미지 */}
-      <div 
+      <div
         className="background-image"
         style={{ backgroundImage: `url(${backgroundImg})` }}
       />
@@ -85,58 +87,67 @@ print(cook_with_ai([
       </div>
 
       {/* 음식 이미지들 */}
-      <motion.div 
+      <motion.div
         className="food-images"
         initial={{ opacity: 0 }}
         animate={{ opacity: showImages ? 1 : 0 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
       >
-        <motion.img 
-          src={statueImg} 
-          alt="statue" 
+        {/* statue: 입장만, 반복 없음 */}
+        <motion.img
+          src={statueImg}
+          alt="statue"
           className="food-image statue"
           initial={{ opacity: 0, y: 30 }}
           animate={showImages ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 1.5, delay: 0.2 }}
         />
-        <motion.img 
-          src={tomatoImg} 
-          alt="tomato" 
+
+        {/* tomato: y만 무한 반복, opacity는 1번 */}
+        <motion.img
+          src={tomatoImg}
+          alt="tomato"
           className="food-image tomato"
           initial={{ y: -100, opacity: 0 }}
-          animate={showImages ? { y: 0, opacity: 1 } : { y: -100, opacity: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          animate={showImages ? { y: bobbingY, opacity: 1 } : { y: -100, opacity: 0 }}
+          transition={{
+            ...bobT,
+            opacity: { duration: 1, delay: 0.4, repeat: 0 }
+          }}
         />
-        <motion.img 
-          src={mosaicImg} 
-          alt="mosaic" 
-          className="food-image mosaic"
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={showImages ? { scale: 1, opacity: 1 } : { scale: 0.5, opacity: 0 }}
-          transition={{ duration: 1.3, delay: 0.6 }}
-        />
-        <motion.img 
-          src={cheeseImg} 
-          alt="cheese" 
+
+        {/* cheese: x로 입장+opacity 1번, y는 무한 반복(속도 살짝 다르게) */}
+        <motion.img
+          src={cheeseImg}
+          alt="cheese"
           className="food-image cheese"
           initial={{ x: 100, opacity: 0 }}
-          animate={showImages ? { x: 0, opacity: 1 } : { x: 100, opacity: 0 }}
-          transition={{ duration: 1.1, delay: 0.8 }}
+          animate={showImages ? { x: 0, y: bobbingY, opacity: 1 } : { x: 100, y: 0, opacity: 0 }}
+          transition={{
+            y: { duration: 7, ease: "easeInOut", repeat: Infinity },
+            x: { duration: 1.1, delay: 0.8, repeat: 0 },
+            opacity: { duration: 1.1, delay: 0.8, repeat: 0 }
+          }}
         />
-        <motion.img 
-          src={broccoliImg} 
-          alt="broccoli" 
+
+        {/* broccoli: scale로 입장+opacity 1번, y는 무한 반복(가장 느리게) */}
+        <motion.img
+          src={broccoliImg}
+          alt="broccoli"
           className="food-image broccoli"
-          initial={{ scale: 0, y: 50 }}
-          animate={showImages ? { scale: 1, y: 0 } : { scale: 0, y: 50 }}
-          transition={{ duration: 1.4, delay: 1 }}
+          initial={{ scale: 0, y: 50, opacity: 0 }}
+          animate={showImages ? { scale: 1, y: bobbingY, opacity: 1 } : { scale: 0, y: 50, opacity: 0 }}
+          transition={{
+            y: { duration: 9, ease: "easeInOut", repeat: Infinity },
+            scale: { duration: 0.6, delay: 1, repeat: 0 },
+            opacity: { duration: 0.6, delay: 1, repeat: 0 }
+          }}
         />
       </motion.div>
 
       {/* 메인 콘텐츠 */}
       <div className="main-content">
-        {/* 첫 번째 제목 */}
-        <motion.h1 
+        <motion.h1
           className="main-title-1"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: showTitle1 ? 1 : 0, y: showTitle1 ? 0 : 30 }}
@@ -145,8 +156,7 @@ print(cook_with_ai([
           이 맛에 AI한다;
         </motion.h1>
 
-        {/* 두 번째 제목 */}
-        <motion.h2 
+        <motion.h2
           className="main-title-2"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: showTitle2 ? 1 : 0, y: showTitle2 ? 0 : 30 }}
@@ -155,19 +165,18 @@ print(cook_with_ai([
           프롬프트 엔지니어링
         </motion.h2>
 
-        {/* 시작 버튼 */}
         <motion.button
           className="start-button"
           onClick={handleStartClick}
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ 
-            opacity: showButton ? 1 : 0, 
-            scale: showButton ? 1 : 0.8 
+          animate={{
+            opacity: showButton ? 1 : 0,
+            scale: showButton ? 1 : 0.8
           }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          whileHover={{ 
-            scale: 1.05, 
-            boxShadow: "0 10px 30px rgba(0,0,0,0.3)" 
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
           }}
           whileTap={{ scale: 0.95 }}
         >
