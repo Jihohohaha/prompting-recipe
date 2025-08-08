@@ -1,12 +1,20 @@
-# React + Vite
+# Prompting Recipe 🍳
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI 프롬프트 작성을 도와주는 웹 애플리케이션입니다.
 
-Currently, two official plugins are available:
+## 기능
+- 분야별 AI 프롬프트 추천
+- 프롬프트 튜토리얼
+- 커뮤니티 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 기술 스택
+- React 19
+- Vite
+- TailwindCSS
+- React Router DOM
+- Framer Motion
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 실행 방법
+```bash
+npm install
+npm run dev
