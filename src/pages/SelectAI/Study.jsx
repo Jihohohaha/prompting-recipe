@@ -32,7 +32,7 @@ const Study = () => {
 
   const handleAIClick = (ai) => {
     if (ai.title === "ChatGPT") {
-      navigate('/tutorial-gpt')
+      navigate('/chatgpt-tutorial') // 새로운 페이지로 이동
     } else {
       console.log(`${ai.title} 선택됨`)
       // 향후 다른 AI들의 기능 구현

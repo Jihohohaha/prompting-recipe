@@ -60,3 +60,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #FF8A6A 0%, #FF2802 100%);
 }
+
+/* .barcode-cursor {
+  cursor: url('/barcode-small.png'), auto;
+} */

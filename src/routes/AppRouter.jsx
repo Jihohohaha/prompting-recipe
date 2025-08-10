@@ -9,6 +9,7 @@ import Study from '../pages/SelectAI/Study'
 import Art from '../pages/SelectAI/Art'
 import Search from '../pages/SelectAI/Search'
 import TutorialGPT from '../pages/TutorialGPT'
+import ChatGPTTutorial from '../pages/ChatGPTTutorial' // 새로 추가
 import Information from '../pages/Community/Information'
 import Creation from '../pages/Community/Creation'
 
@@ -25,6 +26,7 @@ const AppRouter = () => {
       </Route>
 
       <Route path="/tutorial-gpt" element={<TutorialGPT />} />
+      <Route path="/chatgpt-tutorial" element={<ChatGPTTutorial />} /> {/* 새로 추가된 라우트 */}
       
       <Route path="/community/information" element={<Information />} />
       <Route path="/community/creation" element={<Creation />} />
