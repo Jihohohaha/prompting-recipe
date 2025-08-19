@@ -2,21 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 전체 요소 초기화 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* 폰트 */
+@font-face {
+  font-family: "StretchPro";
+  src: url("/StretchPro.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DesiraDEMO";
+  src: url("/DesiraDEMO.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
+/* 레이아웃 기본값 */
+html, body, #root { height: 100%; }
+body { margin: 0; }
 
-#root {
-  height: 100%;
-  width: 100%;
+/* ===== 유틸리티/애니메이션 ===== */
+@layer utilities {
+  /* 처음엔 흰색 → 위에서부터 주황이 내려와 최종 주황 단색 */
+  .text-gradient-reveal {
+    /* 텍스트에 배경 그라데이션을 입히기 위한 필수 속성들 */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+    /* 위쪽은 흰색, 아래쪽은 주황(하드 스톱으로 절반 분리) */
+    background-image: linear-gradient(
+      to top,
+      white 0 50%,       /* 위 절반: 완전 흰색 */
+      #FF6C43 50% 100%   /* 아래 절반: 완전 주황 */
+    );
+
+    /* 이미지 높이를 요소의 2배로 만들어 절반만 보이게 이동 */
+    background-repeat: no-repeat;
+    background-size: 100% 200%;
+    background-position: bottom;         /* 시작: 위 절반(흰색)만 보임 */
+    animation: gradientReveal 2s ease-out forwards;
+  }
+
+  @keyframes gradientReveal {
+    to { background-position: top; } /* 끝: 아래 절반(주황)만 보임 → 주황 단색 */
+  }
+
+  .reveal-stagger > span {
+    display: inline-block;
+    animation-delay: var(--sd, 0ms);     /* --sd 를 각 글자에 개별 부여 */
+  }
 }

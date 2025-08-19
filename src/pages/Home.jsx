@@ -147,7 +147,7 @@ print(cook_with_ai([
 
       {/* 메인 콘텐츠 */}
       <div className="main-content">
-        <motion.h1
+        {/*<motion.h1
           className="main-title-1"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: showTitle1 ? 1 : 0, y: showTitle1 ? 0 : 30 }}
@@ -182,6 +182,7 @@ print(cook_with_ai([
         >
           시작하기
         </motion.button>
+        */}
       </div>
     </div>
   )
