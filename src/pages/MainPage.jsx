@@ -71,46 +71,61 @@ export default function MainPage() {
         aria-hidden="true"
       />
 
-      {/* 가운데 타이틀/설명 + 버튼 */}
+      {/* 메인 베너 - 화면 중앙에 위치 */}
       <div
         className={[
           "pointer-events-none absolute inset-0 z-20",
-          "flex flex-col items-center justify-center text-center",
+          "flex items-center justify-center",
           "transition-opacity duration-700 ease-out",
           overlayGone ? "opacity-0" : "opacity-100",
         ].join(" ")}
       >
-        <FourStageFillText
-          text="PRomptinG"
-          className="text-[80px] font-stretch leading-none"
-          step={120}  // 글자별 딜레이 조절
-          animationDuration={5}  // 전체 애니메이션 시간 (초)
-        />
-        <FourStageFillText
-          text="[RECIPE]"
-          className="text-[80px] font-desira leading-none"
-          step={120}  // 글자별 딜레이 조절
-          animationDuration={5}  // 전체 애니메이션 시간 (초)
-        />
+        <div className="flex flex-col items-center justify-center">
+          <FourStageFillText
+            text="PRomptinG"
+            className="text-[80px] font-stretch leading-none"
+            step={120}
+            animationDuration={5}
+          />
+          <FourStageFillText
+            text="[RECIPE]"
+            className="text-[80px] font-desira leading-none"
+            step={120}
+            animationDuration={5}
+          />
+        </div>
+      </div>
 
-        <TypingText
-          text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
-          className="mt-4 text-white text-[16px] max-w-[90vw]"
-          typingSpeed={100} // 타이핑 속도 (글자당 ms)
-          blinkSpeed={100} // 커서 깜박임 속도 (ms)
-          initialBlinkCount={12}
-        />
-
-        <div className="pointer-events-auto absolute bottom-[20vh] left-1/2 -translate-x-1/2">
-          <button
-            type="button"
-            onClick={handlePlay}
-            className="px-6 py-3 rounded-full border bg-white border-white/40 text-black backdrop-blur-sm
-                       hover:bg-white/10 hover:text-white active:scale-95 transition"
-            aria-label="영상 재생"
-          >
-            요리를 시작해볼까요?
-          </button>
+      {/* 텍스트와 버튼 영역 - 메인 베너 하단에 위치 */}
+      <div
+        className={[
+          "pointer-events-none absolute inset-0 z-20",
+          "flex flex-col justify-end items-center pb-36",
+          "transition-opacity duration-700 ease-out",
+          overlayGone ? "opacity-0" : "opacity-100",
+        ].join(" ")}
+      >
+        <div className="flex flex-col items-center gap-6">
+          <TypingText
+            text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
+            className="text-white text-[16px] max-w-[90vw] text-center"
+            typingSpeed={100}
+            blinkSpeed={100}
+            initialBlinkCount={12}
+          />
+          
+          <div className="pointer-events-auto">
+            <button
+              type="button"
+              onClick={handlePlay}
+              className="main-button px-4 py-2 rounded-full border bg-zinc-300 border-zinc-300 text-black
+                        hover:bg-zinc-400 hover:scale-105
+                        active:scale-95 transition"
+              aria-label="영상 재생"
+            >
+              요리를 시작해볼까요?
+            </button>
+          </div>
         </div>
       </div>
 

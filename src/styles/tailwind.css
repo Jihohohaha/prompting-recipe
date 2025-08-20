@@ -23,6 +23,17 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 
+
+.main-button:hover {
+  border-color: #a1a1aa !important; /* zinc-400 */
+}
+
+.main-button:focus,
+.main-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* ===== 유틸리티/애니메이션 ===== */
 @layer utilities {
   /* 4단계 텍스트 그라데이션 애니메이션 (안전한 방법) */
