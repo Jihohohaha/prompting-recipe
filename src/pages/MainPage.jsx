@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import FourStageFillText from "../components/common/FourStageFillText";
 import MosaicBubble from "../components/common/MosaicBubble";
 import TypingText from "../components/common/TypingText";
+import IngredientOnCircle from "../components/common/IngredientOnCircle";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -16,6 +17,14 @@ export default function MainPage() {
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
   const mosaicActive = !overlayGone; // 재생 전만 활성화
 
+  // 재료들의 원 위 위치 설정 (각도 기준)
+  const ingredientPositions = [
+    { name: 'broccoli', angle: 320, image: '/images/broccoli.png' },  // 좌상단
+    { name: 'cheese', angle: 220, image: '/images/cheese.png' },       // 우상단
+    { name: 'grapes', angle: 180, image: '/images/grapes.png' },      // 좌측
+    { name: 'apple', angle: 0, image: '/images/apple.png' }           // 우측
+  ];
+
   const handlePlay = async () => {
     const v = videoRef.current;
     if (!v) return;
@@ -26,19 +35,19 @@ export default function MainPage() {
       await v.play();
       setOverlayGone(true);
       
-      // 3초 후 select-field 페이지로 이동
+      // 6초 후 select-field 페이지로 이동
       setTimeout(() => {
         navigate('/select-field');
-      }, 3000);
+      }, 6000);
     } catch {
       v.muted = true; // 모바일 폴백
       await v.play();
       setOverlayGone(true);
       
-      // 3초 후 select-field 페이지로 이동
+      // 6초 후 select-field 페이지로 이동
       setTimeout(() => {
         navigate('/select-field');
-      }, 3000);
+      }, 6000);
     }
   };
 
@@ -62,6 +71,27 @@ export default function MainPage() {
         />
       </div>
 
+      {/* 주황색 원 - 오버레이가 사라진 후 표시 */}
+      {overlayGone && (
+        <div className="absolute inset-0 z-5 flex items-center justify-center">
+          <div className="w-[120vh] h-[120vh] border-4 border-orange-500 rounded-full" />
+        </div>
+      )}
+
+      {/* 재료 이미지들 - 오버레이가 사라진 후 원 위에 표시 */}
+      {overlayGone && (
+        <>
+          {ingredientPositions.map((ingredient) => (
+            <IngredientOnCircle
+              key={ingredient.name}
+              name={ingredient.name}
+              image={ingredient.image}
+              angle={ingredient.angle}
+              radius={60} // 원의 반지름과 맞춤 (120vh / 2 = 60vh)
+            />
+          ))}
+        </>
+      )}
       {/* 재생 전: 영상 위/글자 아래 70% 검정 덮개 */}
       <div
         className={[
@@ -107,7 +137,7 @@ export default function MainPage() {
       >
         <div className="flex flex-col items-center gap-6">
           <TypingText
-            text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
+            text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
             className="text-white text-[16px] max-w-[90vw] text-center"
             typingSpeed={100}
             blinkSpeed={100}
@@ -121,7 +151,6 @@ export default function MainPage() {
               className="main-button px-4 py-2 rounded-full border bg-zinc-300 border-zinc-300 text-black
                         hover:bg-zinc-400 hover:scale-105
                         active:scale-95 transition"
-              aria-label="영상 재생"
             >
               요리를 시작해볼까요?
             </button>
