@@ -22,7 +22,7 @@ const ChatGPTTutorial = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false)
-    }, 10000000) // 10초 후 로딩 화면 숨김
+    }, 10000) // 10초 후 로딩 화면 숨김
 
     return () => clearTimeout(timer)
   }, [])

@@ -2,21 +2,21 @@
 import { Routes, Route } from 'react-router-dom'
 
 // 페이지 import
-import Home from '../pages/Home'
+import MainPage from '../pages/MainPage'  // 새로운 메인 페이지
 import SelectField from '../pages/SelectField'
 import SelectAI from '../pages/SelectAI'
 import Study from '../pages/SelectAI/Study'
 import Art from '../pages/SelectAI/Art'
 import Search from '../pages/SelectAI/Search'
 import TutorialGPT from '../pages/TutorialGPT'
-import ChatGPTTutorial from '../pages/ChatGPTTutorial' // 새로 추가
+import ChatGPTTutorial from '../pages/ChatGPTTutorial'
 import Information from '../pages/Community/Information'
 import Creation from '../pages/Community/Creation'
 
 const AppRouter = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<MainPage />} />  {/* MainPage로 변경 */}
       <Route path="/select-field" element={<SelectField />} />
 
       <Route path="/select-ai" element={<SelectAI />} >
@@ -26,7 +26,7 @@ const AppRouter = () => {
       </Route>
 
       <Route path="/tutorial-gpt" element={<TutorialGPT />} />
-      <Route path="/chatgpt-tutorial" element={<ChatGPTTutorial />} /> {/* 새로 추가된 라우트 */}
+      <Route path="/chatgpt-tutorial" element={<ChatGPTTutorial />} />
       
       <Route path="/community/information" element={<Information />} />
       <Route path="/community/creation" element={<Creation />} />

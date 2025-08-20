@@ -1,25 +1,11 @@
-import { useRef, useState, memo, useMemo } from "react";
-
-/* ── 글자별 그라데이션: 한 번만 실행되도록 안정화 ───────────────────────── */
-const StaggerFillText = memo(function StaggerFillText({ text, className = "", step = 70 }) {
-  const letters = useMemo(
-    () =>
-      text.split("").map((ch, i) => (
-        <span
-          key={i}
-          style={{ "--sd": `${i * step}ms` }}
-          className="text-gradient-reveal"
-        >
-          {ch === " " ? "\u00A0" : ch}
-        </span>
-      )),
-    [text, step]
-  );
-
-  return <span className={`reveal-stagger ${className}`}>{letters}</span>;
-});
+// src/pages/MainPage.jsx
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import StaggerFillText from "../components/common/StaggerFillText";
+import MosaicBubble from "../components/common/MosaicBubble";
 
 export default function MainPage() {
+  const navigate = useNavigate();
   const videoRef = useRef(null);
 
   // 초기 오버레이(제목/버튼) 표시 상태
@@ -27,7 +13,6 @@ export default function MainPage() {
 
   // 마우스 위치 (모자이크 버블)
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
-  const MOSAIC_RADIUS = 50; // 버블 반지름(px)
   const mosaicActive = !overlayGone; // 재생 전만 활성화
 
   const handlePlay = async () => {
@@ -39,10 +24,20 @@ export default function MainPage() {
       v.muted = false;
       await v.play();
       setOverlayGone(true);
+      
+      // 3초 후 select-field 페이지로 이동
+      setTimeout(() => {
+        navigate('/select-field');
+      }, 3000);
     } catch {
       v.muted = true; // 모바일 폴백
       await v.play();
       setOverlayGone(true);
+      
+      // 3초 후 select-field 페이지로 이동
+      setTimeout(() => {
+        navigate('/select-field');
+      }, 3000);
     }
   };
 
@@ -59,7 +54,7 @@ export default function MainPage() {
       <div className="absolute inset-0 z-0 flex items-center justify-center">
         <video
           ref={videoRef}
-          src="/bg.mp4"
+          src="/videos/bg.mp4"
           className="h-full object-contain"
           preload="metadata"
           playsInline
@@ -104,7 +99,7 @@ export default function MainPage() {
             type="button"
             onClick={handlePlay}
             className="px-6 py-3 rounded-full border bg-white border-white/40 text-black backdrop-blur-sm
-                       hover:bg-white/10 active:scale-95 transition"
+                       hover:bg-white/10 hover:text-white active:scale-95 transition"
             aria-label="영상 재생"
           >
             요리를 시작해볼까요?
@@ -113,23 +108,7 @@ export default function MainPage() {
       </div>
 
       {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
-      {mosaicActive && (
-        <div className="pointer-events-none fixed inset-0 z-[999]" aria-hidden="true">
-          <div
-            className="
-              absolute rounded-full
-              backdrop-blur-[10px] backdrop-contrast-150 backdrop-saturate-75 backdrop-brightness-90
-              transition-transform duration-75
-            "
-            style={{
-              left: mouse.x - MOSAIC_RADIUS,
-              top: mouse.y - MOSAIC_RADIUS,
-              width: MOSAIC_RADIUS * 2,
-              height: MOSAIC_RADIUS * 2,
-            }}
-          />
-        </div>
-      )}
+      {mosaicActive && <MosaicBubble mouseX={mouse.x} mouseY={mouse.y} />}
     </div>
   );
 }
