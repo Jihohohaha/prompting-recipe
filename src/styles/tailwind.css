@@ -1,3 +1,4 @@
+/* src/styles/tailwind.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,34 +25,118 @@ body { margin: 0; }
 
 /* ===== 유틸리티/애니메이션 ===== */
 @layer utilities {
-  /* 처음엔 흰색 → 위에서부터 주황이 내려와 최종 주황 단색 */
-  .text-gradient-reveal {
-    /* 텍스트에 배경 그라데이션을 입히기 위한 필수 속성들 */
+  /* 4단계 텍스트 그라데이션 애니메이션 (안전한 방법) */
+  .text-gradient-four-stage {
+  display: inline-block;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    #FF6C43 0%,
+    #FFFFFF 100%
+  );
+  background-size: 100% 400%; /* 애니메이션에 필요한 크기만큼 그라데이션 확대 */
+  background-position: 0 100%; /* 그라데이션의 초기 위치 */
+  animation: fourStageGradientSafe var(--duration, 4s) ease-out forwards;
+  animation-delay: var(--sd, 0ms);
+  p {
+    white-space: pre-wrap;
+  }
+}
+
+  @keyframes fourStageGradientSafe {
+  /* Stage 1: 흰색 (배경의 아래쪽에 흰색 그라데이션) */
+  0%, 25% {
+    background-position: 0 100%;
+  }
+  
+  /* Stage 2: 흰색에서 주황색으로 변화 시작 (그라데이션이 위로 이동) */
+  50% {
+    background-position: 0 50%;
+  }
+
+  /* Stage 3: 주황색이 더 넓게 채워짐 (그라데이션이 더 위로 이동) */
+  75% {
+    background-position: 0 25%;
+  }
+
+  /* Stage 4: 최종 (주황색 그라데이션이 상단까지 채워짐) */
+  100% {
+    background-position: 0 0%;
+  }
+}
+
+  /* 폴백: 그라데이션이 지원되지 않을 때 */
+  .text-gradient-four-stage-fallback {
+    color: #FFFFFF;
+    animation: colorChangeFallback var(--duration, 4s) ease-out forwards;
+    animation-delay: var(--sd, 0ms);
+  }
+
+  @keyframes colorChangeFallback {
+    0%, 25% { color: #FFFFFF; }
+    26%, 100% { color: #FF6C43; }
+  }
+
+  /* 3단계 텍스트 그라데이션 애니메이션 (기존 유지) */
+  .text-gradient-three-stage {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-
-    /* 위쪽은 흰색, 아래쪽은 주황(하드 스톱으로 절반 분리) */
-    background-image: linear-gradient(
-      to top,
-      white 0 50%,       /* 위 절반: 완전 흰색 */
-      #FF6C43 50% 100%   /* 아래 절반: 완전 주황 */
-    );
-
-    /* 이미지 높이를 요소의 2배로 만들어 절반만 보이게 이동 */
-    background-repeat: no-repeat;
-    background-size: 100% 200%;
-    background-position: bottom;         /* 시작: 위 절반(흰색)만 보임 */
-    animation: gradientReveal 2s ease-out forwards;
+    animation: threeStageGradient 3s ease-out forwards;
+    animation-delay: var(--sd, 0ms);
   }
 
-  @keyframes gradientReveal {
-    to { background-position: top; } /* 끝: 아래 절반(주황)만 보임 → 주황 단색 */
+  @keyframes threeStageGradient {
+    0% {
+      background: #FFFFFF;
+    }
+    33% {
+      background: #FFFFFF;
+    }
+    66% {
+      background: linear-gradient(360deg, #FFFFFF 0%, #FF6C43 100%);
+    }
+    100% {
+      background: linear-gradient(360deg, #FFFFFF 0%, #FF6C43 39.79%);
+    }
   }
 
   .reveal-stagger > span {
     display: inline-block;
-    animation-delay: var(--sd, 0ms);     /* --sd 를 각 글자에 개별 부여 */
   }
+
+  /* 기존 애니메이션 (필요시 사용) */
+  .text-gradient-reveal {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    background-image: linear-gradient(
+      to top,
+      white 0 50%,
+      #FF6C43 50% 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 200%;
+    background-position: bottom;
+    animation: gradientReveal 2s ease-out forwards;
+  }
+
+  @keyframes gradientReveal {
+    to { background-position: top; }
+  }
+
+  /* 깜박이는 커서 애니메이션 */
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+
 }

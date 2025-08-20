@@ -1,8 +1,9 @@
 // src/pages/MainPage.jsx
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import StaggerFillText from "../components/common/StaggerFillText";
+import FourStageFillText from "../components/common/FourStageFillText";
 import MosaicBubble from "../components/common/MosaicBubble";
+import TypingText from "../components/common/TypingText";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -79,20 +80,26 @@ export default function MainPage() {
           overlayGone ? "opacity-0" : "opacity-100",
         ].join(" ")}
       >
-        <StaggerFillText
+        <FourStageFillText
           text="PRomptinG"
           className="text-[80px] font-stretch leading-none"
+          step={120}  // 글자별 딜레이 조절
+          animationDuration={5}  // 전체 애니메이션 시간 (초)
         />
-        <StaggerFillText
+        <FourStageFillText
           text="[RECIPE]"
           className="text-[80px] font-desira leading-none"
+          step={120}  // 글자별 딜레이 조절
+          animationDuration={5}  // 전체 애니메이션 시간 (초)
         />
 
-        <h3 className="mt-4 text-white text-[16px] max-w-[90vw]">
-          AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.
-          <br />
-          좋은 레시피로 요리를 해야 좋은 음식이 나온다.
-        </h3>
+        <TypingText
+          text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
+          className="mt-4 text-white text-[16px] max-w-[90vw]"
+          typingSpeed={100} // 타이핑 속도 (글자당 ms)
+          blinkSpeed={100} // 커서 깜박임 속도 (ms)
+          initialBlinkCount={12}
+        />
 
         <div className="pointer-events-auto absolute bottom-[20vh] left-1/2 -translate-x-1/2">
           <button
