@@ -11,7 +11,7 @@ const Navigation = () => {
           style={{
             fontFamily: 'Michroma, monospace',
             fontWeight: 400,
-            fontSize: '22px',
+            fontSize: '18px',
             lineHeight: '100%',
             background: 'linear-gradient(180deg, #FF2802 0%, #FF8A6A 100%)',
             WebkitBackgroundClip: 'text',
@@ -27,31 +27,31 @@ const Navigation = () => {
       <div className="flex items-center space-x-8">
         <Link 
           to="/" 
-          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-medium"
+          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-pretendard"
         >
           홈
         </Link>
         <Link 
           to="/tutorial-gpt" 
-          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-medium"
+          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-pretendard"
         >
           튜토리얼
         </Link>
         <Link 
           to="/select-field" 
-          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-medium"
+          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-pretendard"
         >
           객관식 퀴즈
         </Link>
         <Link 
           to="/community/information" 
-          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-medium"
+          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-pretendard"
         >
           주관식 퀴즈
         </Link>
         <Link 
           to="/community/creation" 
-          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-medium"
+          className="text-white hover:text-[#FF8A6A] transition-colors duration-300 font-pretendard"
         >
           커뮤니티
         </Link>

@@ -5,6 +5,7 @@ import FourStageFillText from "../components/common/FourStageFillText";
 import MosaicBubble from "../components/common/MosaicBubble";
 import TypingText from "../components/common/TypingText";
 import IngredientOnCircle from "../components/common/IngredientOnCircle";
+import BlurCrossfade from "../components/common/BlurCrossfade";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ export default function MainPage() {
 
   // 초기 오버레이(제목/버튼) 표시 상태
   const [overlayGone, setOverlayGone] = useState(false);
+  
+  // 트랜지션 상태 추가
+  const [showTransition, setShowTransition] = useState(false);
 
   // 마우스 위치 (모자이크 버블)
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
@@ -35,20 +39,25 @@ export default function MainPage() {
       await v.play();
       setOverlayGone(true);
       
-      // 6초 후 select-field 페이지로 이동
+      // 5초 후 자연스러운 트랜지션 시작
       setTimeout(() => {
-        navigate('/select-field');
-      }, 6000);
+        setShowTransition(true);
+      }, 5000);
     } catch {
       v.muted = true; // 모바일 폴백
       await v.play();
       setOverlayGone(true);
       
-      // 6초 후 select-field 페이지로 이동
+      // 5초 후 자연스러운 트랜지션 시작
       setTimeout(() => {
-        navigate('/select-field');
-      }, 6000);
+        setShowTransition(true);
+      }, 5000);
     }
+  };
+
+  // 트랜지션 완료 후 페이지 이동
+  const handleTransitionComplete = () => {
+    navigate('/select-field');
   };
 
   return (
@@ -92,6 +101,7 @@ export default function MainPage() {
           ))}
         </>
       )}
+
       {/* 재생 전: 영상 위/글자 아래 70% 검정 덮개 */}
       <div
         className={[
@@ -138,7 +148,7 @@ export default function MainPage() {
         <div className="flex flex-col items-center gap-6">
           <TypingText
             text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
-            className="text-white text-[16px] max-w-[90vw] text-center"
+            className="text-white text-[16px] max-w-[90vw] text-center font-pretendard"
             typingSpeed={100}
             blinkSpeed={100}
             initialBlinkCount={12}
@@ -150,13 +160,21 @@ export default function MainPage() {
               onClick={handlePlay}
               className="main-button px-4 py-2 rounded-full border bg-zinc-300 border-zinc-300 text-black
                         hover:bg-zinc-400 hover:scale-105
-                        active:scale-95 transition"
+                        active:scale-95 transition 
+                        font-pretendard"
             >
               요리를 시작해볼까요?
             </button>
           </div>
         </div>
       </div>
+
+      {/* 자연스러운 블러 크로스페이드 트랜지션 */}
+      <BlurCrossfade 
+        isActive={showTransition}
+        onComplete={handleTransitionComplete}
+        duration={1.5} // 1.5초로 자연스럽게
+      />
 
       {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
       {mosaicActive && <MosaicBubble mouseX={mouse.x} mouseY={mouse.y} />}
