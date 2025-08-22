@@ -4,20 +4,23 @@ import { motion } from 'framer-motion'
 import Navigation from '../components/layout/Navigation'
 import IngredientCard from '../components/common/IngredientCard'
 import LearningInfoModal from '../components/common/LearningInfoModal'
+import IngredientModal from '../components/common/IngredientModal'
 import '../styles/App.css'
 
-// 이미지 imports
-import backgroundImg from '../assets/images/chatgpt-tutorial-bg.png'
-import basketImg from '../assets/images/basket.png'
-import flourImg from '../assets/images/flour.png'
-import tomatoImg from '../assets/images/tomato-halftone.png'
-import cheeseImg from '../assets/images/cheese-slice.png'
-import pepperoniImg from '../assets/images/pepperoni.png'
-import oliveImg from '../assets/images/olive.png'
-import basilImg from '../assets/images/basil.png'
+// 이미지 imports - public 폴더 경로로 수정
+const backgroundImg = '/src/assets/images/chatgpt-tutorial-bg.png'
+const basketImg = '/src/assets/images/basket.png'
+const flourImg = '/src/assets/images/flour.png'
+const tomatoImg = '/src/assets/images/tomato-halftone.png'
+const cheeseImg = '/src/assets/images/cheese-slice.png'
+const pepperoniImg = '/src/assets/images/pepperoni.png'
+const oliveImg = '/src/assets/images/olive.png'
+const basilImg = '/src/assets/images/basil.png'
 
 const ChatGPTTutorial = () => {
   const [showModal, setShowModal] = useState(false)
+  const [ingredientModalOpen, setIngredientModalOpen] = useState(false)
+  const [selectedIngredient, setSelectedIngredient] = useState(null)
 
   // ChatGPT 학습 정보
   const chatGPTInfo = {
@@ -36,13 +39,59 @@ const ChatGPTTutorial = () => {
     setShowModal(false)
   }
 
+  const handleIngredientClick = (ingredient) => {
+    setSelectedIngredient(ingredient)
+    setIngredientModalOpen(true)
+  }
+
+  const handleIngredientModalClose = () => {
+    setIngredientModalOpen(false)
+    setSelectedIngredient(null)
+  }
+
   const ingredients = [
-    { id: 1, name: '밀가루', image: flourImg },
-    { id: 2, name: '토마토', image: tomatoImg },
-    { id: 3, name: '치즈', image: cheeseImg },
-    { id: 4, name: '페퍼로니', image: pepperoniImg },
-    { id: 5, name: '올리브', image: oliveImg },
-    { id: 6, name: '바질', image: basilImg }
+    { 
+      id: 1, 
+      name: '밀가루', 
+      image: flourImg,
+      technique: 'FEW SHOT 기법',
+      description: '첫번째 방법론에 대해 알려드렸습니다.'
+    },
+    { 
+      id: 2, 
+      name: '토마토', 
+      image: tomatoImg,
+      technique: '역할 지정 기법',
+      description: '두번째 방법론에 대해 알려드렸습니다.'
+    },
+    { 
+      id: 3, 
+      name: '치즈', 
+      image: cheeseImg,
+      technique: '마크다운 템플릿 1',
+      description: '세번째 방법론에 대해 알려드렸습니다.'
+    },
+    { 
+      id: 4, 
+      name: '페퍼로니', 
+      image: pepperoniImg,
+      technique: '마크다운 템플릿 2',
+      description: '네번째 방법론에 대해 알려드렸습니다.'
+    },
+    { 
+      id: 5, 
+      name: '올리브', 
+      image: oliveImg,
+      technique: 'Chain of Thought 기법',
+      description: '다섯번째 방법론에 대해 알려드렸습니다.'
+    },
+    { 
+      id: 6, 
+      name: '바질', 
+      image: basilImg,
+      technique: 'ReAct 기법',
+      description: '여섯번째 방법론에 대해 알려드렸습니다.'
+    }
   ]
 
   return (
@@ -136,6 +185,8 @@ const ChatGPTTutorial = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + (index * 0.2) }}
+                  onClick={() => handleIngredientClick(ingredient)}
+                  className="cursor-pointer"
                 >
                   <IngredientCard 
                     name={ingredient.name}
@@ -246,6 +297,8 @@ const ChatGPTTutorial = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.8 + (index * 0.2) }}
+                  onClick={() => handleIngredientClick(ingredient)}
+                  className="cursor-pointer"
                 >
                   <IngredientCard 
                     name={ingredient.name}
@@ -265,6 +318,13 @@ const ChatGPTTutorial = () => {
         aiInfo={chatGPTInfo}
         onComplete={handleModalComplete}
         duration={3000}
+      />
+
+      {/* 재료 모달 */}
+      <IngredientModal
+        isOpen={ingredientModalOpen}
+        onClose={handleIngredientModalClose}
+        ingredientData={selectedIngredient}
       />
     </div>
   )
