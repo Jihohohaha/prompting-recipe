@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navigation from '../components/layout/Navigation'
-import TutorialMainScreen from '../components/layout/TutorialMainScreen'
 import IngredientCard from '../components/common/IngredientCard'
+import LearningInfoModal from '../components/common/LearningInfoModal'
 import '../styles/App.css'
 
 // 이미지 imports
@@ -17,15 +17,24 @@ import oliveImg from '../assets/images/olive.png'
 import basilImg from '../assets/images/basil.png'
 
 const ChatGPTTutorial = () => {
-  const [showLoading, setShowLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+
+  // ChatGPT 학습 정보
+  const chatGPTInfo = {
+    title: "ChatGPT",
+    features: "자연스러운 대화형 인터페이스로 복잡한 개념을 쉽게 설명하고, 단계별 학습을 지원합니다.",
+    learningMethod: "질문-답변 형식으로 학습하며, 예시와 함께 개념을 설명받을 수 있습니다. 코딩 문제나 수학 문제 해결에도 유용합니다.",
+    tips: "구체적인 질문을 하고, 이해가 안 되는 부분은 다시 질문하세요. '예시를 들어 설명해줘'라고 요청하면 더 쉽게 이해할 수 있습니다."
+  }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false)
-    }, 10000) // 10초 후 로딩 화면 숨김
-
-    return () => clearTimeout(timer)
+    // 페이지 로드 즉시 모달 표시
+    setShowModal(true)
   }, [])
+
+  const handleModalComplete = () => {
+    setShowModal(false)
+  }
 
   const ingredients = [
     { id: 1, name: '밀가루', image: flourImg },
@@ -35,19 +44,6 @@ const ChatGPTTutorial = () => {
     { id: 5, name: '올리브', image: oliveImg },
     { id: 6, name: '바질', image: basilImg }
   ]
-
-  if (!showLoading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full h-full"
-      >
-        <TutorialMainScreen />
-      </motion.div>
-    )
-  }
 
   return (
     <div 
@@ -63,13 +59,13 @@ const ChatGPTTutorial = () => {
       <Navigation />
 
       {/* Main Content */}
-      <div className="relative z-10 pt-20"> {/* pt-24에서 pt-20으로 줄임 */}
+      <div className="relative z-10 pt-20">
         {/* ChatGPT Title - 네비게이터 바로 밑에 위치 */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex justify-center mb-4" // mb-8에서 mb-4로 줄임
+          className="flex justify-center mb-4"
         >
           <div
             style={{
@@ -102,31 +98,31 @@ const ChatGPTTutorial = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="mx-2" // mx-4에서 mx-2로 줄임
+          className="mx-2"
           style={{
-            width: 'calc(100% - 16px)', // mx-2를 고려한 너비 계산
-            height: 'calc(100vh - 190px)', // 네비게이션과 타이틀을 제외한 높이
+            width: 'calc(100% - 16px)',
+            height: 'calc(100vh - 190px)',
             background: 'transparent',
             border: 'none',
-            padding: '10px', // 20px에서 10px로 줄임
+            padding: '10px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}
         >
           {/* 세 개의 투명 컨테이너 */}
-          <div className="flex justify-between items-center w-full max-w-screen-xl"> {/* justify-center에서 justify-between으로, 전체 너비 사용 */}
+          <div className="flex justify-between items-center w-full max-w-screen-xl">
             {/* 첫 번째 컨테이너 (좌측 재료들) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                width: '240px',      // 250px에서 240px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '240px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '15px',     // 20px에서 15px로 줄임
+                padding: '15px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -156,11 +152,11 @@ const ChatGPTTutorial = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
               style={{
-                width: '1200px',      // 600px에서 550px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '1200px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '30px',     // 40px에서 30px로 줄임
+                padding: '30px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -172,12 +168,12 @@ const ChatGPTTutorial = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.0 }}
-                className="text-center mb-4" // mb-8에서 mb-6으로 줄임
+                className="text-center mb-4"
               >
                 <p
                   style={{
                     fontFamily: 'Pretendard, sans-serif',
-                    fontSize: '24px',    // 26px에서 24px로 줄임
+                    fontSize: '24px',
                     color: '#000000',
                     fontWeight: '500',
                     textShadow: '1px 1px 2px rgba(255, 255, 255, 0.8)'
@@ -193,13 +189,13 @@ const ChatGPTTutorial = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="mb-4" // mb-8에서 mb-6으로 줄임
+                className="mb-4"
               >
                 <img 
                   src={basketImg} 
                   alt="Shopping Basket" 
                   style={{ width: '1200px', height: '400px' }}
-                  className="object-contain" // w-52 h-52에서 w-72 h-72로 크게 키움
+                  className="object-contain"
                 />
               </motion.div>
 
@@ -213,7 +209,7 @@ const ChatGPTTutorial = () => {
                 <p
                   style={{
                     fontFamily: 'Pretendard, sans-serif',
-                    fontSize: '16px',    // 18px에서 16px로 줄임
+                    fontSize: '16px',
                     color: '#FFFFFF',
                     lineHeight: '1.5',
                     textAlign: 'center',
@@ -232,11 +228,11 @@ const ChatGPTTutorial = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                width: '240px',      // 250px에서 240px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '240px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '15px',     // 20px에서 15px로 줄임
+                padding: '15px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -255,7 +251,6 @@ const ChatGPTTutorial = () => {
                     name={ingredient.name}
                     image={ingredient.image}
                   />
-
                   <div style={{height:'10px'}}></div>
                 </motion.div>
               ))}
@@ -264,51 +259,13 @@ const ChatGPTTutorial = () => {
         </motion.div>
       </div>
 
-      {/* Loading Screen Overlay */}
-      {showLoading && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 flex items-center justify-center z-50"
-        >
-          <div className="flex space-x-4">
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0,
-              }}
-            />
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0.2,
-              }}
-            />
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0.4,
-              }}
-            />
-          </div>
-        </motion.div>
-      )}
+      {/* 학습 정보 모달 */}
+      <LearningInfoModal
+        isVisible={showModal}
+        aiInfo={chatGPTInfo}
+        onComplete={handleModalComplete}
+        duration={3000}
+      />
     </div>
   )
 }
