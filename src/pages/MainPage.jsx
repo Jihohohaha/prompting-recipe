@@ -69,6 +69,7 @@ export default function MainPage() {
       }}
       onMouseLeave={() => setMouse({ x: -9999, y: -9999 })}
     >
+
       {/* 비디오: 가운데 정렬, 원본비 유지 */}
       <div className="absolute inset-0 z-0 flex items-center justify-center">
         <video
