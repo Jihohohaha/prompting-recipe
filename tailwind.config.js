@@ -6,9 +6,9 @@ export default {
       fontFamily: {
         stretch: ['"StretchPro"', "sans-serif"],
         desira: ['"DesiraDEMO"', "sans-serif"],
-        // 새로운 폰트 추가
         pretendard: ['"Pretendard"', "sans-serif"],
-        michroma: ['"Michroma"', "monospace"], // Michroma는 보통 monospace 계열
+        michroma: ['"Michroma"', "monospace"],
+        neodgm: ['"Neodgm"', "monospace"],
       },
     },
   },

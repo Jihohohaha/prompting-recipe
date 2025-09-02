@@ -11,6 +11,7 @@ import '../styles/App.css'
 const backgroundImg = '/src/assets/images/chatgpt-tutorial-bg.png'
 const basketImg = '/src/assets/images/basket.png'
 const flourImg = '/src/assets/images/flour.png'
+const flourImg_bg='/src/assets/images/flour-bg.png'
 const tomatoImg = '/src/assets/images/tomato-halftone.png'
 const cheeseImg = '/src/assets/images/cheese-slice.png'
 const pepperoniImg = '/src/assets/images/pepperoni.png'
@@ -54,43 +55,61 @@ const ChatGPTTutorial = () => {
       id: 1, 
       name: '밀가루', 
       image: flourImg,
+      bgimage: flourImg_bg,
       technique: 'FEW SHOT 기법',
-      description: '첫번째 방법론에 대해 알려드렸습니다.'
+      description: '첫번째 방법론에 대해 알려드리겠습니다.',
+      color: '#ECE290',
+      tagcolor: '#F3E88D'
     },
     { 
       id: 2, 
       name: '토마토', 
       image: tomatoImg,
+      bgimage: flourImg_bg,
       technique: '역할 지정 기법',
-      description: '두번째 방법론에 대해 알려드렸습니다.'
+      description: '두번째 방법론에 대해 알려드리겠습니다.',
+      color: '#DD7B25',
+      tagcolor: '#FFB371'
     },
     { 
       id: 3, 
       name: '치즈', 
       image: cheeseImg,
+      bgimage: flourImg_bg,
       technique: '마크다운 템플릿 1',
-      description: '세번째 방법론에 대해 알려드렸습니다.'
+      description: '세번째 방법론에 대해 알려드리겠습니다.',
+      color: '#F1F5A1',
+      tagcolor: '#F9FF81'
     },
     { 
       id: 4, 
       name: '페퍼로니', 
       image: pepperoniImg,
+      bgimage: flourImg_bg,
       technique: '마크다운 템플릿 2',
-      description: '네번째 방법론에 대해 알려드렸습니다.'
+      description: '네번째 방법론에 대해 알려드리겠습니다.',
+      color: '#BD4728',
+      tagcolor: '#FFA2A2'
     },
     { 
       id: 5, 
       name: '올리브', 
       image: oliveImg,
+      bgimage: flourImg_bg,
       technique: 'Chain of Thought 기법',
-      description: '다섯번째 방법론에 대해 알려드렸습니다.'
+      description: '다섯번째 방법론에 대해 알려드리겠습니다.',
+      color: '#005D06',
+      tagcolor: '#008F0A'
     },
     { 
       id: 6, 
       name: '바질', 
       image: basilImg,
+      bgimage: flourImg_bg,
       technique: 'ReAct 기법',
-      description: '여섯번째 방법론에 대해 알려드렸습니다.'
+      description: '여섯번째 방법론에 대해 알려드리겠습니다.',
+      color: '#24A73C',
+      tagcolor: '#1CD83E'
     }
   ]
 

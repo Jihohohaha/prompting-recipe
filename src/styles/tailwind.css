@@ -6,14 +6,15 @@
 /* 폰트 */
 @font-face {
   font-family: "StretchPro";
-  src: url("/StretchPro.otf") format("opentype");
+  src: url("/fonts/StretchPro.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: "DesiraDEMO";
-  src: url("/DesiraDEMO.otf") format("opentype");
+  src: url("/fonts/DesiraDEMO.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -30,6 +31,14 @@
 @font-face {
   font-family: "Michroma";
   src: url("/fonts/Michroma-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neodgm";
+  src: url("/fonts/neodgm.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

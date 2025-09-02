@@ -1,6 +1,6 @@
 // src/components/common/IngredientModal.jsx
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, color } from 'framer-motion'
 
 const IngredientModal = ({ 
   isOpen, 
@@ -13,9 +13,9 @@ const IngredientModal = ({
 
   // 초기 메시지들 (재료별로 다르게 설정 가능)
   const getInitialMessages = () => [
-    { id: 1, type: 'bot', text: '안녕하세요! 저는 AI 요리사입니다.', delay: 500 },
+    { id: 1, type: 'bot', text: '안녕하세요! 저는 당신의 요리 조수입니다.', delay: 500 },
     { id: 2, type: 'user', text: '안녕하세요!', delay: 1500 },
-    { id: 3, type: 'bot', text: `${ingredientData?.name || '재료'}에 대해 궁금한 것이 있으신가요?`, delay: 2500 }
+    { id: 3, type: 'bot', text: `${ingredientData?.name || '재료'}를 사용할 준비를 해볼까요? 아래 빈칸을 완성해주세요!`, delay: 2500 }
   ]
 
   useEffect(() => {
@@ -82,17 +82,34 @@ const IngredientModal = ({
           onClick={onClose}
         >
           <motion.div
-            className="relative bg-white rounded-2xl shadow-2xl overflow-hidden"
-            style={{
-              width: '800px',
-              height: '600px'
-            }}
+            style={{ '--from': ingredientData?.color || '#ECE290' }}
+            className="
+              relative
+              w-[1000px] h-[700px]
+              overflow-hidden rounded-2xl shadow-2xl
+              bg-gradient-to-b
+              from-[var(--from)]
+              to-black to-[70%]
+            "
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* 배경 이미지 */}
+            {ingredientData?.bgimage ? (
+              <img 
+                src={ingredientData.bgimage} 
+                alt="bgiamge" 
+                className="absolute w-[600px] h-auto bottom-[40vh] object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                }}
+              />
+            ) : (
+              <span className="text-gray-400 text-xs">🥣</span>
+            )}
             {/* X 버튼 */}
             <button
               onClick={onClose}
@@ -102,55 +119,35 @@ const IngredientModal = ({
             </button>
 
             {/* 첫 번째 컨테이너: 헤더 영역 */}
-            <div className="relative h-32 bg-gradient-to-r from-orange-300 to-yellow-200 flex items-center justify-center">
+            <div className="relative h-[25vh] bg-transparent flex top-[20px] justify-center">
               {/* 기법 이름 컨테이너 (뒤쪽) */}
-              <div 
-                className="absolute bg-yellow-300 rounded-full px-6 py-2 shadow-md"
-                style={{
-                  top: '20px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 1
-                }}
-              >
-                <span className="text-sm font-medium text-gray-800">
+              <div
+              className={`relative h-[28px] w-[160px] text-center rounded-full border border-black z-20`}
+              style={{ backgroundColor: ingredientData?.tagcolor || '#ECE290' }}>
+                <span className="text-sm font-medium font-neodgm text-gray-800">
                   {ingredientData?.technique || 'FEW SHOT 기법'}
                 </span>
               </div>
 
               {/* 재료 이름 컨테이너 (앞쪽) */}
               <div 
-                className="absolute bg-white rounded-lg px-8 py-3 shadow-lg border-2 border-gray-200"
-                style={{
-                  top: '45px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 2
-                }}
-              >
-                <span className="text-xl font-bold text-gray-800">
+                className="absolute flex bg-white px-[80px] py-[12px] items-center justify-center top-[24px] border-2 border-black z-10">
+                <span className="text-2xl font-bold font-neodgm text-gray-800">
                   {ingredientData?.name || '밀가루'}
                 </span>
               </div>
 
               {/* 간단한 멘트 */}
               <div 
-                className="absolute bg-white rounded-full px-6 py-2 shadow-md"
-                style={{
-                  bottom: '10px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 1
-                }}
-              >
-                <span className="text-sm text-gray-600">
-                  {ingredientData?.description || '첫번째 방법론에 대해 알려드렸습니다.'}
+                className="absolute bg-white top-[100px] rounded-xl px-16 py-3 border border-black">
+                <span className="text-m font-pretendard text-black">
+                  {ingredientData?.description || '첫번째 방법론에 대해 알려드리겠습니다.'}
                 </span>
               </div>
             </div>
 
             {/* 두 번째 컨테이너: 대화 영역 */}
-            <div className="h-80 bg-gray-50 p-6 overflow-y-auto">
+            <div className="h-[50vh] bg-transparent p-6 overflow-y-auto">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <motion.div
@@ -200,7 +197,7 @@ const IngredientModal = ({
             </div>
 
             {/* 세 번째 컨테이너: 입력 영역 */}
-            <div className="h-20 bg-white border-t border-gray-200 flex items-center px-6">
+            <div className="h-20 bg-transparent flex items-end px-6">
               <div className="flex-1 flex items-center space-x-3">
                 {/* 재료 아이콘 */}
                 <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
