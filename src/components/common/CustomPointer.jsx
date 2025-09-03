@@ -1,23 +1,24 @@
-// src/components/CustomPointer.jsx
-import { useEffect, useRef, useState } from "react";
-// 방법 1) public 폴더 사용: src="/barcode-big.png" 로 전달
-// 방법 2) assets import 사용 예시:
-// import barcodeImg from "@/assets/barcode-big.png";
+// src/components/common/CustomPointer.jsx
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import defaultBarcode from "../../assets/images/barcode.png";
 
 export default function CustomPointer({
-  src = "/barcode-big.png", // public/ 아래 두기
-  size = 128,               // 이미지 크기(px)
-  hotspot = [32, 32],       // 클릭 기준점(이미지 내 좌표)
-  smooth = 0.18,            // 따라오는 부드러움(0~1)
-  hideNative = true,        // OS 커서 숨김
-  hideOverInputs = true,    // 입력창 위에서는 숨김
+  src = defaultBarcode,
+  size = 128,
+  hotspot = [32, 32],
+  smooth = 0.18,
+  hideNative = true,
+  hideOverInputs = true,
 }) {
   const raf = useRef(null);
   const pos = useRef({ x: -9999, y: -9999 });
   const target = useRef({ x: -9999, y: -9999 });
   const imgRef = useRef(null);
-  const [visible, setVisible] = useState(false);
-  const [pressed, setPressed] = useState(false);
+
+  // ✅ state 대신 ref로 가시성/클릭 상태 보관(클로저 이슈 방지)
+  const visibleRef = useRef(false);
+  const pressedRef = useRef(false);
 
   useEffect(() => {
     if (hideNative && !window.matchMedia("(pointer: coarse)").matches) {
@@ -27,36 +28,45 @@ export default function CustomPointer({
   }, [hideNative]);
 
   useEffect(() => {
-    const coarse = window.matchMedia("(pointer: coarse)").matches; // 터치 기기
-    if (coarse) return; // 터치 환경에서는 비활성
+    const move = (e) => {
+      const t = e.touches?.[0];
+      const cx = t ? t.clientX : e.clientX;
+      const cy = t ? t.clientY : e.clientY;
 
-    const onMove = (e) => {
-      if (hideOverInputs && e.target.closest('input, textarea, select, [contenteditable="true"]')) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-      target.current.x = e.clientX - hotspot[0];
-      target.current.y = e.clientY - hotspot[1];
+      const tgt = e.target || document.body;
+      visibleRef.current = !(hideOverInputs && tgt.closest?.('input, textarea, select, [contenteditable="true"]'));
+
+      // 타깃 좌표(왼쪽/위 기준). 핫스팟은 transform에서 보정.
+      target.current.x = cx;
+      target.current.y = cy;
+
       if (!raf.current) loop();
     };
-    const onEnter = () => setVisible(true);
-    const onLeave = () => setVisible(false);
-    const onDown = () => setPressed(true);
-    const onUp = () => setPressed(false);
+    const enter = () => { visibleRef.current = true; };
+    const leave = () => { visibleRef.current = false; };
+    const down  = () => { pressedRef.current = true; };
+    const up    = () => { pressedRef.current = false; };
 
-    window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("mouseenter", onEnter);
-    window.addEventListener("mouseleave", onLeave);
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("mouseup", onUp);
+    const opts = { passive: true };
+    window.addEventListener("pointermove", move, opts);
+    window.addEventListener("mousemove", move, opts);
+    window.addEventListener("pointerenter", enter);
+    window.addEventListener("pointerleave", leave);
+    window.addEventListener("pointerdown", down);
+    window.addEventListener("pointerup", up);
+
+    // 첫 프레임부터 루프 시작
+    if (!raf.current) raf.current = requestAnimationFrame(loop);
+
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseenter", onEnter);
-      window.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mouseup", onUp);
-      cancelAnimationFrame(raf.current);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("pointerenter", enter);
+      window.removeEventListener("pointerleave", leave);
+      window.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointerup", up);
+      if (raf.current) cancelAnimationFrame(raf.current);
+      raf.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hideOverInputs, hotspot[0], hotspot[1]]);
@@ -64,16 +74,22 @@ export default function CustomPointer({
   function loop() {
     pos.current.x += (target.current.x - pos.current.x) * smooth;
     pos.current.y += (target.current.y - pos.current.y) * smooth;
-    if (imgRef.current) {
-      imgRef.current.style.transform =
-        `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) scale(${pressed ? 0.96 : 1})`;
-      imgRef.current.style.opacity = visible ? "1" : "0";
+
+    const el = imgRef.current;
+    if (el) {
+      // ✅ 화면 좌표를 left/top으로 갱신 (이것 때문에 -9999에서 벗어남)
+      el.style.left = `${pos.current.x}px`;
+      el.style.top  = `${pos.current.y}px`;
+      // ✅ 핫스팟/클릭 효과는 transform으로만
+      el.style.transform = `translate(${-hotspot[0]}px, ${-hotspot[1]}px) scale(${pressedRef.current ? 0.96 : 1})`;
+      // ✅ 가시성은 ref로
+      el.style.opacity = visibleRef.current ? "1" : "0";
     }
     raf.current = requestAnimationFrame(loop);
   }
 
-  return (
-    <div className="fixed left-0 top-0 z-[10000] pointer-events-none">
+  return createPortal(
+    <div style={{ position: "fixed", inset: 0, zIndex: 2147483647, pointerEvents: "none" }}>
       <img
         ref={imgRef}
         src={src}
@@ -81,9 +97,19 @@ export default function CustomPointer({
         width={size}
         height={size}
         draggable={false}
-        className="select-none will-change-transform transition-opacity duration-150"
-        style={{ transform: "translate3d(-9999px,-9999px,0)", opacity: 0 }}
+        style={{
+          position: "fixed",
+          left: "-9999px",
+          top: "-9999px",
+          opacity: 0,
+          willChange: "transform, opacity, left, top",
+          display: "block",
+          pointerEvents: "none",
+          transition: "opacity 150ms",
+        }}
+        onError={() => console.error("CustomPointer: 이미지 로드 실패 →", src)}
       />
-    </div>
+    </div>,
+    document.body
   );
 }
