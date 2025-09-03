@@ -1,4 +1,4 @@
-// src/routes/AppRouter.jsx (선택적 인증)
+// src/routes/AppRouter.jsx
 import { Routes, Route, Navigate } from 'react-router-dom'
 // 페이지 import
 import MainPage from '../pages/MainPage'
@@ -13,6 +13,7 @@ import Information from '../pages/Community/Information'
 import Creation from '../pages/Community/Creation'
 import LoginPage from '../pages/LoginPage'
 import MyPage from '../pages/MyPage'
+import AuthCallbackPage from '../pages/AuthCallbackPage'
 
 // 로그인 필수 페이지 (개인화 기능이 필요한 페이지들)
 const ProtectedRoute = ({ children, isAuthenticated }) => {
@@ -41,6 +42,12 @@ const AppRouter = ({ isAuthenticated }) => {
             <LoginPage />
           </PublicRoute>
         } 
+      />
+
+      {/* 소셜 로그인 콜백 페이지 */}
+      <Route 
+        path="/auth/callback" 
+        element={<AuthCallbackPage />} 
       />
 
       {/* 공개 페이지들 (로그인 없이도 접근 가능) */}

@@ -75,6 +75,17 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // 소셜 로그인 상태 업데이트 함수 (콜백 페이지에서 사용)
+  const updateAuthState = (userData, tokens) => {
+    if (tokens?.access_token) {
+      apiService.setTokens(tokens.access_token, tokens.refresh_token)
+    }
+    
+    setUser(userData)
+    setIsAuthenticated(true)
+    localStorage.setItem('user', JSON.stringify(userData))
+  }
+
   // 로그아웃 함수
   const logout = async () => {
     try {
@@ -84,32 +95,11 @@ export function AuthProvider({ children }) {
     } finally {
       setUser(null)
       setIsAuthenticated(false)
-      setError(null)
+      localStorage.removeItem('user')
     }
   }
 
-  // 이메일 인증 관련
-  const sendVerificationEmail = async (email) => {
-    try {
-      setError(null)
-      return await apiService.sendVerificationEmail(email)
-    } catch (error) {
-      setError(error.message)
-      throw error
-    }
-  }
-
-  const checkVerificationCode = async (email, code) => {
-    try {
-      setError(null)
-      return await apiService.checkVerificationCode(email, code)
-    } catch (error) {
-      setError(error.message)
-      throw error
-    }
-  }
-
-  const value = {
+  const contextValue = {
     user,
     isAuthenticated,
     isLoading,
@@ -117,21 +107,24 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
-    sendVerificationEmail,
-    checkVerificationCode
+    updateAuthState, // 새로 추가된 함수
+    setUser,          // AuthCallbackPage에서 직접 사용
+    setIsAuthenticated // AuthCallbackPage에서 직접 사용
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth는 AuthProvider 내에서만 사용할 수 있습니다')
   }
   return context
 }
+
+// export { AuthProvider }

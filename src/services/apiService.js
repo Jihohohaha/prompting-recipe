@@ -1,8 +1,8 @@
-// src/services/apiService.js (실제 백엔드 연동)
+// src/services/apiService.js (수정된 버전)
 
 class ApiService {
   constructor() {
-    this.baseURL = ''
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
   }
 
   /**
@@ -51,7 +51,7 @@ class ApiService {
    * 기본 fetch 래퍼
    */
   async request(endpoint, options = {}) {
-    const url = endpoint
+    const url = `${this.baseURL}${endpoint}`
     
     const config = {
       headers: {
@@ -63,6 +63,7 @@ class ApiService {
 
     try {
       console.log(`API 요청: ${config.method || 'GET'} ${url}`)
+      console.log('요청 데이터:', config.body) // 디버깅용
       
       const response = await fetch(url, config)
       
@@ -90,8 +91,20 @@ class ApiService {
       }
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `API 요청 실패: ${response.status}`)
+        const errorText = await response.text()
+        console.error('응답 에러 상세:', errorText) // 디버깅용
+        console.error('응답 헤더:', [...response.headers.entries()]) // 헤더 정보
+        
+        let errorData = {}
+        try {
+          errorData = JSON.parse(errorText)
+          console.error('파싱된 에러 데이터:', errorData)
+        } catch (e) {
+          console.error('응답을 JSON으로 파싱할 수 없음:', errorText)
+          errorData = { message: errorText }
+        }
+        
+        throw new Error(errorData.message || errorData.error || `API 요청 실패: ${response.status} - ${errorText}`)
       }
 
       return await response.json()
@@ -130,14 +143,20 @@ class ApiService {
    */
   async register(userData) {
     const { name, email, loginId, password } = userData
+    
+    // 백엔드에서 password_hash로 받으므로 필드명 맞춤
+    const requestData = {
+      name,
+      email, 
+      loginId,
+      password_hash: password
+    }
+    
+    console.log('회원가입 요청 데이터:', requestData) // 디버깅용
+    
     return await this.request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({
-        name,
-        email, 
-        loginId,
-        password_hash: password
-      }),
+      body: JSON.stringify(requestData),
       auth: false
     })
   }
@@ -203,14 +222,14 @@ class ApiService {
    * 구글 로그인
    */
   async googleLogin() {
-    window.location.href = '/auth/google'
+    window.location.href = `${this.baseURL}/auth/google`
   }
 
   /**
    * 카카오 로그인  
    */
   async kakaoLogin() {
-    window.location.href = '/auth/kakao'
+    window.location.href = `${this.baseURL}/auth/kakao`
   }
 
   /**
@@ -218,7 +237,7 @@ class ApiService {
    */
   async testConnection() {
     try {
-      const testEndpoints = ['/backend']
+      const testEndpoints = ['/']
 
       for (const endpoint of testEndpoints) {
         try {

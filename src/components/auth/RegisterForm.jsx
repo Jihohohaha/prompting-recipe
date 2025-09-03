@@ -2,21 +2,21 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
+import SocialLoginButtons from './SocialLoginButtons'
+import LoginDivider from './LoginDivider'
 
 const RegisterForm = ({ onSwitchToLogin }) => {
-  const [step, setStep] = useState(1) // 1: 이메일 인증, 2: 회원 정보 입력
+  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
-    email: '',
-    verificationCode: '',
     name: '',
+    email: '',
     loginId: '',
     password: '',
     confirmPassword: ''
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isVerifying, setIsVerifying] = useState(false)
-  const { register, sendVerificationEmail, checkVerificationCode, isLoading, error } = useAuth()
+  const [socialLoading, setSocialLoading] = useState(false)
+  const { register, isLoading, error } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
@@ -25,36 +25,24 @@ const RegisterForm = ({ onSwitchToLogin }) => {
     })
   }
 
-  // 1단계: 이메일 인증 코드 발송
-  const handleSendVerification = async (e) => {
-    e.preventDefault()
-    
-    try {
-      setIsVerifying(true)
-      await sendVerificationEmail(formData.email)
-      alert('인증 코드가 이메일로 발송되었습니다.')
-    } catch (error) {
-      console.error('인증 코드 발송 실패:', error)
-    } finally {
-      setIsVerifying(false)
-    }
-  }
-
-  // 2단계: 인증 코드 확인
-  const handleVerifyCode = async (e) => {
-    e.preventDefault()
-    
-    try {
-      await checkVerificationCode(formData.email, formData.verificationCode)
+  const handleNext = () => {
+    if (step === 1) {
+      if (!formData.name || !formData.email) {
+        alert('이름과 이메일을 입력해주세요.')
+        return
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        alert('올바른 이메일 주소를 입력해주세요.')
+        return
+      }
+      
       setStep(2)
-      alert('이메일 인증이 완료되었습니다!')
-    } catch (error) {
-      console.error('인증 코드 확인 실패:', error)
     }
   }
 
-  // 3단계: 회원가입 완료
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (formData.password !== formData.confirmPassword) {
@@ -82,11 +70,18 @@ const RegisterForm = ({ onSwitchToLogin }) => {
     }
   }
 
-  const handleSocialLogin = (provider) => {
-    if (provider === 'google') {
-      window.location.href = '/auth/google'
-    } else if (provider === 'kakao') {
-      window.location.href = '/auth/kakao'
+  const handleSocialLogin = async (provider) => {
+    setSocialLoading(true)
+    
+    try {
+      if (provider === 'google') {
+        window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`
+      } else if (provider === 'kakao') {
+        window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/kakao`
+      }
+    } catch (error) {
+      console.error('소셜 로그인 실패:', error)
+      setSocialLoading(false)
     }
   }
 
@@ -109,7 +104,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
           }`}>
             1
           </div>
-          <div className={`w-12 h-1 ${step >= 2 ? 'bg-orange-500' : 'bg-gray-200'}`}></div>
+          <div className={`w-12 h-1 mx-2 ${step >= 2 ? 'bg-orange-500' : 'bg-gray-200'}`}></div>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
             step >= 2 ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-400'
           }`}>
@@ -128,200 +123,217 @@ const RegisterForm = ({ onSwitchToLogin }) => {
         )}
 
         {step === 1 && (
-          <div>
-            {/* 소셜 로그인 버튼들 */}
-            <div className="space-y-3 mb-6">
-              <button
-                onClick={() => handleSocialLogin('google')}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                <div className="w-5 h-5 mr-3 bg-red-500 rounded-full"></div>
-                Google로 가입하기
-              </button>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* 소셜 회원가입 섹션 */}
+            <SocialLoginButtons 
+              isLoading={socialLoading}
+              onSocialLogin={handleSocialLogin}
+            />
 
-              <button
-                onClick={() => handleSocialLogin('kakao')}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center px-4 py-3 bg-yellow-400 text-gray-800 rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50"
-              >
-                <div className="w-5 h-5 mr-3 bg-gray-800 rounded-full"></div>
-                카카오로 가입하기
-              </button>
-            </div>
+            {/* 구분선 */}
+            <LoginDivider />
 
-            <div className="flex items-center mb-6">
-              <div className="flex-1 border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500 text-sm">또는</span>
-              <div className="flex-1 border-t border-gray-300"></div>
-            </div>
-
-            {/* 이메일 인증 단계 */}
-            <form onSubmit={handleSendVerification} className="space-y-4">
+            {/* 1단계: 기본 정보 */}
+            <div className="space-y-5">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  이름
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                  placeholder="이름을 입력하세요"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   이메일
                 </label>
                 <input
                   type="email"
-                  id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
                   placeholder="이메일을 입력하세요"
+                  required
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={isVerifying}
-                className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+              <motion.button
+                type="button"
+                onClick={handleNext}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                {isVerifying ? '발송 중...' : '인증 코드 받기'}
-              </button>
-            </form>
-
-            {/* 인증 코드 입력 */}
-            <form onSubmit={handleVerifyCode} className="space-y-4 mt-6">
-              <div>
-                <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-2">
-                  인증 코드
-                </label>
-                <input
-                  type="text"
-                  id="verificationCode"
-                  name="verificationCode"
-                  value={formData.verificationCode}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="이메일로 받은 인증 코드를 입력하세요"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={!formData.verificationCode || isLoading}
-                className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? '확인 중...' : '인증 코드 확인'}
-              </button>
-            </form>
-          </div>
+                다음 단계
+              </motion.button>
+            </div>
+          </motion.div>
         )}
 
         {step === 2 && (
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                이름
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="이름을 입력하세요"
-              />
-            </div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* 2단계: 로그인 정보 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  아이디
+                </label>
+                <input
+                  type="text"
+                  name="loginId"
+                  value={formData.loginId}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                  placeholder="아이디를 입력하세요"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  영문, 숫자 조합 4-20자
+                </p>
+              </div>
 
-            <div>
-              <label htmlFor="loginId" className="block text-sm font-medium text-gray-700 mb-2">
-                아이디
-              </label>
-              <input
-                type="text"
-                id="loginId"
-                name="loginId"
-                value={formData.loginId}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="아이디를 입력하세요"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                비밀번호
-              </label>
               <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  비밀번호
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                    placeholder="비밀번호를 입력하세요"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  최소 6자 이상
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  비밀번호 확인
+                </label>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength="6"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12"
-                  placeholder="비밀번호를 입력하세요 (최소 6자)"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? '🙈' : '👁️'}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                비밀번호 확인
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                    formData.confirmPassword && formData.password !== formData.confirmPassword
+                      ? 'border-red-300 focus:ring-red-500'
+                      : 'border-gray-300 focus:ring-orange-500 focus:border-transparent'
+                  }`}
                   placeholder="비밀번호를 다시 입력하세요"
+                  required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirmPassword ? '🙈' : '👁️'}
-                </button>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-xs text-red-500 mt-1">
+                    비밀번호가 일치하지 않습니다.
+                  </p>
+                )}
               </div>
-              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">비밀번호가 일치하지 않습니다</p>
-              )}
-            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? '가입 중...' : '회원가입 완료'}
-            </motion.button>
-          </form>
+              {/* 약관 동의 */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-3"
+              >
+                <label className="flex items-start space-x-3">
+                  <input 
+                    type="checkbox" 
+                    required
+                    className="mt-1 w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    <span className="text-red-500">*</span> 서비스 이용약관 및 개인정보처리방침에 동의합니다.
+                  </span>
+                </label>
+                
+                <label className="flex items-start space-x-3">
+                  <input 
+                    type="checkbox"
+                    className="mt-1 w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    마케팅 정보 수신에 동의합니다. (선택)
+                  </span>
+                </label>
+              </motion.div>
+
+              {/* 이전/가입 버튼 */}
+              <div className="flex space-x-3 pt-4">
+                <motion.button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all duration-200"
+                >
+                  이전
+                </motion.button>
+                <motion.button
+                  type="submit"
+                  disabled={isLoading}
+                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  className={`
+                    flex-1 py-3.5 bg-gradient-to-r from-orange-500 to-red-500 
+                    hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-lg 
+                    transition-all duration-200 shadow-lg hover:shadow-xl
+                    ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                  `}
+                >
+                  {isLoading ? '가입 중...' : '회원가입 완료'}
+                </motion.button>
+              </div>
+            </form>
+          </motion.div>
         )}
 
-        <div className="text-center mt-6">
-          <p className="text-gray-600">
-            이미 계정이 있으신가요?{' '}
-            <button
-              onClick={onSwitchToLogin}
-              className="text-orange-500 hover:text-orange-600 font-semibold"
-            >
-              로그인
-            </button>
-          </p>
-        </div>
+        {/* 로그인 페이지로 이동 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.8 }}
+          className="text-center mt-6"
+        >
+          <span className="text-gray-600">이미 계정이 있으신가요? </span>
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="text-orange-600 hover:text-orange-700 font-medium hover:underline transition-colors"
+          >
+            로그인
+          </button>
+        </motion.div>
       </motion.div>
     </div>
   )

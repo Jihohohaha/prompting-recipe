@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import SocialLoginButtons from './SocialLoginButtons'
+import LoginDivider from './LoginDivider'
 
 const LoginForm = ({ onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +12,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [socialLoading, setSocialLoading] = useState(false)
   const { login, isLoading, error } = useAuth()
   const navigate = useNavigate()
 
@@ -31,11 +34,20 @@ const LoginForm = ({ onSwitchToRegister }) => {
     }
   }
 
-  const handleSocialLogin = (provider) => {
-    if (provider === 'google') {
-      window.location.href = '/auth/google'
-    } else if (provider === 'kakao') {
-      window.location.href = '/auth/kakao'
+  const handleSocialLogin = async (provider) => {
+    setSocialLoading(true)
+    
+    try {
+      if (provider === 'google') {
+        // Google OAuth 리다이렉트
+        window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`
+      } else if (provider === 'kakao') {
+        // Kakao OAuth 리다이렉트
+        window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/kakao`
+      }
+    } catch (error) {
+      console.error('소셜 로그인 실패:', error)
+      setSocialLoading(false)
     }
   }
 
@@ -61,98 +73,125 @@ const LoginForm = ({ onSwitchToRegister }) => {
           </motion.div>
         )}
 
-        {/* 소셜 로그인 버튼들 */}
-        <div className="space-y-3 mb-6">
-          <button
-            onClick={() => handleSocialLogin('google')}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+        {/* 소셜 로그인 섹션 */}
+        <SocialLoginButtons 
+          isLoading={socialLoading}
+          onSocialLogin={handleSocialLogin}
+        />
+
+        {/* 구분선 */}
+        <LoginDivider />
+
+        {/* 일반 로그인 폼 */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* 아이디 입력 */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <div className="w-5 h-5 mr-3 bg-red-500 rounded-full"></div>
-            Google로 로그인
-          </button>
-
-          <button
-            onClick={() => handleSocialLogin('kakao')}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center px-4 py-3 bg-yellow-400 text-gray-800 rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50"
-          >
-            <div className="w-5 h-5 mr-3 bg-gray-800 rounded-full"></div>
-            카카오로 로그인
-          </button>
-        </div>
-
-        <div className="flex items-center mb-6">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500 text-sm">또는</span>
-          <div className="flex-1 border-t border-gray-300"></div>
-        </div>
-
-        {/* 이메일 로그인 폼 */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="loginId" className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               아이디
             </label>
             <input
               type="text"
-              id="loginId"
               name="loginId"
               value={formData.loginId}
               onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
               placeholder="아이디를 입력하세요"
+              required
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          {/* 비밀번호 입력 */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="relative"
+          >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               비밀번호
             </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12"
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
                 placeholder="비밀번호를 입력하세요"
+                required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? '🙈' : '👁️'}
               </button>
             </div>
-          </div>
+          </motion.div>
 
+          {/* 로그인 옵션 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+            className="flex items-center justify-between text-sm"
+          >
+            <label className="flex items-center">
+              <input type="checkbox" className="mr-2" />
+              <span className="text-gray-600">로그인 유지</span>
+            </label>
+            <button
+              type="button"
+              className="text-orange-600 hover:text-orange-700 font-medium"
+            >
+              비밀번호 찾기
+            </button>
+          </motion.div>
+
+          {/* 로그인 버튼 */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
+            className={`
+              w-full py-3.5 px-4 
+              bg-gradient-to-r from-orange-500 to-red-500
+              hover:from-orange-600 hover:to-red-600
+              text-white font-bold rounded-lg
+              transition-all duration-200
+              shadow-lg hover:shadow-xl
+              ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
           >
             {isLoading ? '로그인 중...' : '로그인'}
           </motion.button>
-        </form>
 
-        <div className="text-center mt-6">
-          <p className="text-gray-600">
-            계정이 없으신가요?{' '}
+          {/* 회원가입 링크 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.7 }}
+            className="text-center"
+          >
+            <span className="text-gray-600">계정이 없으신가요? </span>
             <button
+              type="button"
               onClick={onSwitchToRegister}
-              className="text-orange-500 hover:text-orange-600 font-semibold"
+              className="text-orange-600 hover:text-orange-700 font-medium hover:underline"
             >
               회원가입
             </button>
-          </p>
-        </div>
+          </motion.div>
+        </form>
       </motion.div>
     </div>
   )
