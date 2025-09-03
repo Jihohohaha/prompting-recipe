@@ -6,6 +6,8 @@ import IngredientCard from '../components/common/IngredientCard'
 import LearningInfoModal from '../components/common/LearningInfoModal'
 import IngredientModal from '../components/common/IngredientModal'
 import '../styles/App.css'
+import CustomPointer from '../components/common/CustomPointer'
+import barcode from '../assets/images/barcode.png'
 
 // 이미지 imports - public 폴더 경로로 수정
 const backgroundImg = '/src/assets/images/chatgpt-tutorial-bg.png'
@@ -117,14 +119,20 @@ const ChatGPTTutorial = () => {
     <div 
       className="w-full h-screen relative overflow-hidden"
       style={{ 
-        backgroundImage: `url(${backgroundImg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        cursor: 'url(/barcode-small.png), crosshair'
-      }}
-    >
+      backgroundImage: `url(${backgroundImg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      // 삭제: cursor: 'url(/barcode-small.png), crosshair'
+      cursor: 'none',}}>
       {/* Navigation */}
       <Navigation />
+      <CustomPointer
+        src={barcode}
+        size={160}          // 원하는 크기
+        hotspot={[80, 80]}  // 클릭 기준점(이미지 중심이면 절반,절반)
+        hideNative={false}  // 전역 커서 숨김 비활성(이 페이지에서만 cursor:none 처리했으므로)
+      />
+
 
       {/* Main Content */}
       <div className="relative z-10 pt-20">
