@@ -1,130 +1,239 @@
 // src/contexts/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, useEffect } from 'react'
 import apiService from '../services/apiService'
 
+// 초기 상태 정의
+const initialState = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  accessToken: null,
+  refreshToken: null
+}
+
+// 액션 타입 정의
+const ActionTypes = {
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGOUT: 'LOGOUT',
+  SET_LOADING: 'SET_LOADING',
+  REFRESH_TOKEN_SUCCESS: 'REFRESH_TOKEN_SUCCESS',
+  AUTH_ERROR: 'AUTH_ERROR'
+}
+
+// 리듀서 함수
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case ActionTypes.LOGIN_SUCCESS:
+      return {
+        ...state,
+        user: action.payload.user,
+        accessToken: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken,
+        isAuthenticated: true,
+        isLoading: false
+      }
+    
+    case ActionTypes.LOGOUT:
+      return {
+        ...initialState,
+        isLoading: false
+      }
+    
+    case ActionTypes.SET_LOADING:
+      return {
+        ...state,
+        isLoading: action.payload
+      }
+    
+    case ActionTypes.REFRESH_TOKEN_SUCCESS:
+      return {
+        ...state,
+        accessToken: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken
+      }
+    
+    case ActionTypes.AUTH_ERROR:
+      return {
+        ...initialState,
+        isLoading: false
+      }
+    
+    default:
+      return state
+  }
+}
+
+// AuthContext 생성
 const AuthContext = createContext()
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+// AuthProvider 컴포넌트
+export const AuthProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState)
 
-  // 앱 시작 시 토큰이 있으면 사용자 정보 가져오기
-  useEffect(() => {
-    const initAuth = async () => {
-      const token = apiService.getToken()
-      const savedUser = localStorage.getItem('user')
-
-      if (token && savedUser) {
-        try {
-          const userData = JSON.parse(savedUser)
-          setUser(userData)
-          setIsAuthenticated(true)
-
-          // 서버에서 최신 사용자 정보 가져오기
-          const currentUser = await apiService.getCurrentUser()
-          setUser(currentUser)
-          localStorage.setItem('user', JSON.stringify(currentUser))
-        } catch (error) {
-          console.error('사용자 정보 가져오기 실패:', error)
-          await logout()
-        }
-      }
-      setIsLoading(false)
-    }
-
-    initAuth()
-  }, [])
-
-  // 로그인 함수
-  const login = async (credentials) => {
+  // 토큰을 localStorage에 저장하는 함수
+  const saveTokensToStorage = (accessToken, refreshToken, user) => {
     try {
-      setIsLoading(true)
-      setError(null)
-
-      const data = await apiService.login(credentials)
-      setUser(data.user)
-      setIsAuthenticated(true)
-
-      return data
+      localStorage.setItem('access_token', accessToken)
+      localStorage.setItem('refresh_token', refreshToken)
+      localStorage.setItem('user', JSON.stringify(user))
     } catch (error) {
-      setError(error.message)
-      throw error
-    } finally {
-      setIsLoading(false)
+      console.error('토큰 저장 실패:', error)
     }
   }
 
-  // 회원가입 함수
-  const register = async (userData) => {
+  // 토큰을 localStorage에서 불러오는 함수
+  const loadTokensFromStorage = () => {
     try {
-      setIsLoading(true)
-      setError(null)
-
-      const data = await apiService.register(userData)
+      const accessToken = localStorage.getItem('access_token')
+      const refreshToken = localStorage.getItem('refresh_token')
+      const userStr = localStorage.getItem('user')
       
-      // 회원가입 후 자동 로그인이 없으므로 수동 로그인 필요
-      setIsLoading(false)
-      return data
+      if (accessToken && refreshToken && userStr) {
+        const user = JSON.parse(userStr)
+        return { accessToken, refreshToken, user }
+      }
     } catch (error) {
-      setError(error.message)
-      throw error
-    } finally {
-      setIsLoading(false)
+      console.error('토큰 로드 실패:', error)
     }
+    return null
   }
 
-  // 소셜 로그인 상태 업데이트 함수 (콜백 페이지에서 사용)
-  const updateAuthState = (userData, tokens) => {
-    if (tokens?.access_token) {
-      apiService.setTokens(tokens.access_token, tokens.refresh_token)
+  // 토큰을 localStorage에서 제거하는 함수
+  const clearTokensFromStorage = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('user')
+  }
+
+  // 로그인 함수 (OAuth 및 일반 로그인 모두 지원)
+  const login = async (accessToken, refreshToken, user) => {
+    try {
+      // 토큰을 localStorage에 저장
+      saveTokensToStorage(accessToken, refreshToken, user)
+      
+      // API 서비스에 토큰 설정
+      apiService.setAuthToken(accessToken)
+      
+      // 상태 업데이트
+      dispatch({
+        type: ActionTypes.LOGIN_SUCCESS,
+        payload: { accessToken, refreshToken, user }
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error('로그인 처리 실패:', error)
+      return { success: false, error: error.message }
     }
-    
-    setUser(userData)
-    setIsAuthenticated(true)
-    localStorage.setItem('user', JSON.stringify(userData))
   }
 
   // 로그아웃 함수
   const logout = async () => {
     try {
-      apiService.clearTokens()
+      // 서버에 로그아웃 요청 (리프레시 토큰 무효화)
+      if (state.refreshToken) {
+        await apiService.post('/auth/logout', {
+          refreshToken: state.refreshToken
+        })
+      }
     } catch (error) {
-      console.error('로그아웃 오류:', error)
+      console.error('서버 로그아웃 요청 실패:', error)
     } finally {
-      setUser(null)
-      setIsAuthenticated(false)
-      localStorage.removeItem('user')
+      // 로컬 스토리지 및 상태 초기화
+      clearTokensFromStorage()
+      apiService.clearAuthToken()
+      dispatch({ type: ActionTypes.LOGOUT })
     }
   }
 
-  const contextValue = {
-    user,
-    isAuthenticated,
-    isLoading,
-    error,
+  // 토큰 갱신 함수
+  const refreshAccessToken = async () => {
+    try {
+      if (!state.refreshToken) {
+        throw new Error('리프레시 토큰이 없습니다')
+      }
+
+      const response = await apiService.post('/auth/refresh', {
+        refreshToken: state.refreshToken
+      })
+
+      const { accessToken, refreshToken: newRefreshToken } = response.data
+
+      // 새 토큰으로 업데이트
+      saveTokensToStorage(accessToken, newRefreshToken, state.user)
+      apiService.setAuthToken(accessToken)
+      
+      dispatch({
+        type: ActionTypes.REFRESH_TOKEN_SUCCESS,
+        payload: { accessToken, refreshToken: newRefreshToken }
+      })
+
+      return accessToken
+    } catch (error) {
+      console.error('토큰 갱신 실패:', error)
+      dispatch({ type: ActionTypes.AUTH_ERROR })
+      clearTokensFromStorage()
+      return null
+    }
+  }
+
+  // OAuth 로그인 URL 생성 함수
+  const getOAuthLoginUrl = (provider) => {
+    const baseUrl = apiService.getBaseUrl()
+    return `${baseUrl}/auth/${provider}`
+  }
+
+  // 컴포넌트 마운트 시 저장된 인증 정보 복원
+  useEffect(() => {
+    const initializeAuth = () => {
+      const savedTokens = loadTokensFromStorage()
+      
+      if (savedTokens) {
+        const { accessToken, refreshToken, user } = savedTokens
+        apiService.setAuthToken(accessToken)
+        
+        dispatch({
+          type: ActionTypes.LOGIN_SUCCESS,
+          payload: { accessToken, refreshToken, user }
+        })
+      } else {
+        dispatch({ type: ActionTypes.SET_LOADING, payload: false })
+      }
+    }
+
+    initializeAuth()
+  }, [])
+
+  // Context 값
+  const value = {
+    // 상태
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
+    accessToken: state.accessToken,
+    refreshToken: state.refreshToken,
+    
+    // 함수들
     login,
-    register,
     logout,
-    updateAuthState, // 새로 추가된 함수
-    setUser,          // AuthCallbackPage에서 직접 사용
-    setIsAuthenticated // AuthCallbackPage에서 직접 사용
+    refreshAccessToken,
+    getOAuthLoginUrl
   }
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
 }
 
+// Context를 사용하는 훅
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth는 AuthProvider 내에서만 사용할 수 있습니다')
+    throw new Error('useAuth는 AuthProvider 내부에서만 사용할 수 있습니다')
   }
   return context
 }
 
-// export { AuthProvider }
+export default AuthContext

@@ -13,7 +13,7 @@ import Information from '../pages/Community/Information'
 import Creation from '../pages/Community/Creation'
 import LoginPage from '../pages/LoginPage'
 import MyPage from '../pages/MyPage'
-import AuthCallbackPage from '../pages/AuthCallbackPage'
+import AuthCallback from '../pages/AuthCallback'  // 새로 추가된 콜백 페이지
 
 // 로그인 필수 페이지 (개인화 기능이 필요한 페이지들)
 const ProtectedRoute = ({ children, isAuthenticated }) => {
@@ -44,13 +44,13 @@ const AppRouter = ({ isAuthenticated }) => {
         } 
       />
 
-      {/* 소셜 로그인 콜백 페이지 */}
+      {/* OAuth 콜백 페이지 - 새로 추가 */}
       <Route 
         path="/auth/callback" 
-        element={<AuthCallbackPage />} 
+        element={<AuthCallback />} 
       />
 
-      {/* 공개 페이지들 (로그인 없이도 접근 가능) */}
+      {/* 공개 페이지들 (로그인 없이도 접근 가능) - 기존과 동일 */}
       <Route path="/" element={<MainPage />} />
       <Route path="/select-field" element={<SelectField />} />
       <Route path="/select-ai" element={<SelectAI />} />
@@ -62,7 +62,7 @@ const AppRouter = ({ isAuthenticated }) => {
       <Route path="/community/information" element={<Information />} />
       <Route path="/community/creation" element={<Creation />} />
 
-      {/* 로그인 필수 페이지들 (개인화 기능) */}
+      {/* 로그인 필수 페이지들 (개인화 기능만) */}
       <Route 
         path="/mypage" 
         element={
