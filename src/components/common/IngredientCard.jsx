@@ -29,7 +29,6 @@ const IngredientCard = ({ name, image }) => {
           fontFamily: 'NeoDunggeunmo, monospace',
           fontWeight: 400,
           fontSize: '22px',
-          fontWeight: '600',
           textShadow: '0.2px 0 black, 0 0.2px black, -0.2px 0 black, 0 -0.2px black, 0.2px 0.2px black, -0.2px -0.2px black, 0.2px -0.2px black, -0.2px 0.2px black',
           lineHeight: '100%',
           textAlign: 'center',

@@ -1,34 +1,33 @@
-import { useRef, useState, memo, useMemo } from "react";
-
-/* ── 글자별 그라데이션: 한 번만 실행되도록 안정화 ───────────────────────── */
-const StaggerFillText = memo(function StaggerFillText({ text, className = "", step = 70 }) {
-  const letters = useMemo(
-    () =>
-      text.split("").map((ch, i) => (
-        <span
-          key={i}
-          style={{ "--sd": `${i * step}ms` }}
-          className="text-gradient-reveal"
-        >
-          {ch === " " ? "\u00A0" : ch}
-        </span>
-      )),
-    [text, step]
-  );
-
-  return <span className={`reveal-stagger ${className}`}>{letters}</span>;
-});
+// src/pages/MainPage.jsx
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import FourStageFillText from "../components/common/FourStageFillText";
+import MosaicBubble from "../components/common/MosaicBubble";
+import TypingText from "../components/common/TypingText";
+import IngredientOnCircle from "../components/common/IngredientOnCircle";
+import BlurCrossfade from "../components/common/BlurCrossfade";
 
 export default function MainPage() {
+  const navigate = useNavigate();
   const videoRef = useRef(null);
 
   // 초기 오버레이(제목/버튼) 표시 상태
   const [overlayGone, setOverlayGone] = useState(false);
+  
+  // 트랜지션 상태 추가
+  const [showTransition, setShowTransition] = useState(false);
 
   // 마우스 위치 (모자이크 버블)
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
-  const MOSAIC_RADIUS = 50; // 버블 반지름(px)
   const mosaicActive = !overlayGone; // 재생 전만 활성화
+
+  // 재료들의 원 위 위치 설정 (각도 기준)
+  const ingredientPositions = [
+    { name: 'broccoli', angle: 320, image: '/images/broccoli.png' },  // 좌상단
+    { name: 'cheese', angle: 220, image: '/images/cheese.png' },       // 우상단
+    { name: 'grapes', angle: 180, image: '/images/grapes.png' },      // 좌측
+    { name: 'apple', angle: 0, image: '/images/apple.png' }           // 우측
+  ];
 
   const handlePlay = async () => {
     const v = videoRef.current;
@@ -39,11 +38,26 @@ export default function MainPage() {
       v.muted = false;
       await v.play();
       setOverlayGone(true);
+      
+      // 5초 후 자연스러운 트랜지션 시작
+      setTimeout(() => {
+        setShowTransition(true);
+      }, 5000);
     } catch {
       v.muted = true; // 모바일 폴백
       await v.play();
       setOverlayGone(true);
+      
+      // 5초 후 자연스러운 트랜지션 시작
+      setTimeout(() => {
+        setShowTransition(true);
+      }, 5000);
     }
+  };
+
+  // 트랜지션 완료 후 페이지 이동
+  const handleTransitionComplete = () => {
+    navigate('/select-field');
   };
 
   return (
@@ -59,12 +73,34 @@ export default function MainPage() {
       <div className="absolute inset-0 z-0 flex items-center justify-center">
         <video
           ref={videoRef}
-          src="/bg.mp4"
+          src="/videos/bg.mp4"
           className="h-full object-contain"
           preload="metadata"
           playsInline
         />
       </div>
+
+      {/* 주황색 원 - 오버레이가 사라진 후 표시 */}
+      {overlayGone && (
+        <div className="absolute inset-0 z-5 flex items-center justify-center">
+          <div className="w-[120vh] h-[120vh] border-4 border-orange-500 rounded-full" />
+        </div>
+      )}
+
+      {/* 재료 이미지들 - 오버레이가 사라진 후 원 위에 표시 */}
+      {overlayGone && (
+        <>
+          {ingredientPositions.map((ingredient) => (
+            <IngredientOnCircle
+              key={ingredient.name}
+              name={ingredient.name}
+              image={ingredient.image}
+              angle={ingredient.angle}
+              radius={60} // 원의 반지름과 맞춤 (120vh / 2 = 60vh)
+            />
+          ))}
+        </>
+      )}
 
       {/* 재생 전: 영상 위/글자 아래 70% 검정 덮개 */}
       <div
@@ -75,61 +111,73 @@ export default function MainPage() {
         aria-hidden="true"
       />
 
-      {/* 가운데 타이틀/설명 + 버튼 */}
+      {/* 메인 베너 - 화면 중앙에 위치 */}
       <div
         className={[
           "pointer-events-none absolute inset-0 z-20",
-          "flex flex-col items-center justify-center text-center",
+          "flex items-center justify-center",
           "transition-opacity duration-700 ease-out",
           overlayGone ? "opacity-0" : "opacity-100",
         ].join(" ")}
       >
-        <StaggerFillText
-          text="PRomptinG"
-          className="text-[80px] font-stretch leading-none"
-        />
-        <StaggerFillText
-          text="[RECIPE]"
-          className="text-[80px] font-desira leading-none"
-        />
-
-        <h3 className="mt-4 text-white text-[16px] max-w-[90vw]">
-          AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피이다.
-          <br />
-          좋은 레시피로 요리를 해야 좋은 음식이 나온다.
-        </h3>
-
-        <div className="pointer-events-auto absolute bottom-[20vh] left-1/2 -translate-x-1/2">
-          <button
-            type="button"
-            onClick={handlePlay}
-            className="px-6 py-3 rounded-full border bg-white border-white/40 text-black backdrop-blur-sm
-                       hover:bg-white/10 active:scale-95 transition"
-            aria-label="영상 재생"
-          >
-            요리를 시작해볼까요?
-          </button>
+        <div className="flex flex-col items-center justify-center">
+          <FourStageFillText
+            text="PRomptinG"
+            className="text-[80px] font-stretch leading-none"
+            step={120}
+            animationDuration={5}
+          />
+          <FourStageFillText
+            text="[RECIPE]"
+            className="text-[80px] font-desira leading-none"
+            step={120}
+            animationDuration={5}
+          />
         </div>
       </div>
 
-      {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
-      {mosaicActive && (
-        <div className="pointer-events-none fixed inset-0 z-[999]" aria-hidden="true">
-          <div
-            className="
-              absolute rounded-full
-              backdrop-blur-[10px] backdrop-contrast-150 backdrop-saturate-75 backdrop-brightness-90
-              transition-transform duration-75
-            "
-            style={{
-              left: mouse.x - MOSAIC_RADIUS,
-              top: mouse.y - MOSAIC_RADIUS,
-              width: MOSAIC_RADIUS * 2,
-              height: MOSAIC_RADIUS * 2,
-            }}
+      {/* 텍스트와 버튼 영역 - 메인 베너 하단에 위치 */}
+      <div
+        className={[
+          "pointer-events-none absolute inset-0 z-20",
+          "flex flex-col justify-end items-center pb-36",
+          "transition-opacity duration-700 ease-out",
+          overlayGone ? "opacity-0" : "opacity-100",
+        ].join(" ")}
+      >
+        <div className="flex flex-col items-center gap-6">
+          <TypingText
+            text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
+            className="text-white text-[16px] max-w-[90vw] text-center font-pretendard"
+            typingSpeed={100}
+            blinkSpeed={100}
+            initialBlinkCount={12}
           />
+          
+          <div className="pointer-events-auto">
+            <button
+              type="button"
+              onClick={handlePlay}
+              className="main-button px-4 py-2 rounded-full border bg-zinc-300 border-zinc-300 text-black
+                        hover:bg-zinc-400 hover:scale-105
+                        active:scale-95 transition 
+                        font-pretendard"
+            >
+              요리를 시작해볼까요?
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* 자연스러운 블러 크로스페이드 트랜지션 */}
+      <BlurCrossfade 
+        isActive={showTransition}
+        onComplete={handleTransitionComplete}
+        duration={1.5} // 1.5초로 자연스럽게
+      />
+
+      {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
+      {mosaicActive && <MosaicBubble mouseX={mouse.x} mouseY={mouse.y} />}
     </div>
   );
 }

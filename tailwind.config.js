@@ -6,6 +6,9 @@ export default {
       fontFamily: {
         stretch: ['"StretchPro"', "sans-serif"],
         desira: ['"DesiraDEMO"', "sans-serif"],
+        pretendard: ['"Pretendard"', "sans-serif"],
+        michroma: ['"Michroma"', "monospace"],
+        neodgm: ['"Neodgm"', "monospace"],
       },
     },
   },

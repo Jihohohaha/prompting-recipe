@@ -2,52 +2,116 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navigation from '../components/layout/Navigation'
-import TutorialMainScreen from '../components/layout/TutorialMainScreen'
 import IngredientCard from '../components/common/IngredientCard'
+import LearningInfoModal from '../components/common/LearningInfoModal'
+import IngredientModal from '../components/common/IngredientModal'
 import '../styles/App.css'
 
-// 이미지 imports
-import backgroundImg from '../assets/images/chatgpt-tutorial-bg.png'
-import basketImg from '../assets/images/basket.png'
-import flourImg from '../assets/images/flour.png'
-import tomatoImg from '../assets/images/tomato-halftone.png'
-import cheeseImg from '../assets/images/cheese-slice.png'
-import pepperoniImg from '../assets/images/pepperoni.png'
-import oliveImg from '../assets/images/olive.png'
-import basilImg from '../assets/images/basil.png'
+// 이미지 imports - public 폴더 경로로 수정
+const backgroundImg = '/src/assets/images/chatgpt-tutorial-bg.png'
+const basketImg = '/src/assets/images/basket.png'
+const flourImg = '/src/assets/images/flour.png'
+const flourImg_bg='/src/assets/images/flour_bg.png'
+const tomatoImg = '/src/assets/images/tomato-halftone.png'
+const cheeseImg = '/src/assets/images/cheese-slice.png'
+const pepperoniImg = '/src/assets/images/pepperoni.png'
+const oliveImg = '/src/assets/images/olive.png'
+const basilImg = '/src/assets/images/basil.png'
 
 const ChatGPTTutorial = () => {
-  const [showLoading, setShowLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [ingredientModalOpen, setIngredientModalOpen] = useState(false)
+  const [selectedIngredient, setSelectedIngredient] = useState(null)
+
+  // ChatGPT 학습 정보
+  const chatGPTInfo = {
+    title: "ChatGPT",
+    features: "자연스러운 대화형 인터페이스로 복잡한 개념을 쉽게 설명하고, 단계별 학습을 지원합니다.",
+    learningMethod: "질문-답변 형식으로 학습하며, 예시와 함께 개념을 설명받을 수 있습니다. 코딩 문제나 수학 문제 해결에도 유용합니다.",
+    tips: "구체적인 질문을 하고, 이해가 안 되는 부분은 다시 질문하세요. '예시를 들어 설명해줘'라고 요청하면 더 쉽게 이해할 수 있습니다."
+  }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false)
-    }, 10000000) // 10초 후 로딩 화면 숨김
-
-    return () => clearTimeout(timer)
+    // 페이지 로드 즉시 모달 표시
+    setShowModal(true)
   }, [])
 
-  const ingredients = [
-    { id: 1, name: '밀가루', image: flourImg },
-    { id: 2, name: '토마토', image: tomatoImg },
-    { id: 3, name: '치즈', image: cheeseImg },
-    { id: 4, name: '페퍼로니', image: pepperoniImg },
-    { id: 5, name: '올리브', image: oliveImg },
-    { id: 6, name: '바질', image: basilImg }
-  ]
-
-  if (!showLoading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full h-full"
-      >
-        <TutorialMainScreen />
-      </motion.div>
-    )
+  const handleModalComplete = () => {
+    setShowModal(false)
   }
+
+  const handleIngredientClick = (ingredient) => {
+    setSelectedIngredient(ingredient)
+    setIngredientModalOpen(true)
+  }
+
+  const handleIngredientModalClose = () => {
+    setIngredientModalOpen(false)
+    setSelectedIngredient(null)
+  }
+
+  const ingredients = [
+    { 
+      id: 1, 
+      name: '밀가루', 
+      image: flourImg,
+      bgimage: flourImg_bg,
+      technique: 'FEW SHOT 기법',
+      description: '첫번째 방법론에 대해 알려드리겠습니다.',
+      color: '#ECE290',
+      tagcolor: '#F3E88D'
+    },
+    { 
+      id: 2, 
+      name: '토마토', 
+      image: tomatoImg,
+      bgimage: flourImg_bg,
+      technique: '역할 지정 기법',
+      description: '두번째 방법론에 대해 알려드리겠습니다.',
+      color: '#DD7B25',
+      tagcolor: '#FFB371'
+    },
+    { 
+      id: 3, 
+      name: '치즈', 
+      image: cheeseImg,
+      bgimage: flourImg_bg,
+      technique: '마크다운 템플릿 1',
+      description: '세번째 방법론에 대해 알려드리겠습니다.',
+      color: '#F1F5A1',
+      tagcolor: '#F9FF81'
+    },
+    { 
+      id: 4, 
+      name: '페퍼로니', 
+      image: pepperoniImg,
+      bgimage: flourImg_bg,
+      technique: '마크다운 템플릿 2',
+      description: '네번째 방법론에 대해 알려드리겠습니다.',
+      color: '#BD4728',
+      tagcolor: '#FFA2A2'
+    },
+    { 
+      id: 5, 
+      name: '올리브', 
+      image: oliveImg,
+      bgimage: flourImg_bg,
+      technique: 'Chain of Thought 기법',
+      description: '다섯번째 방법론에 대해 알려드리겠습니다.',
+      color: '#005D06',
+      tagcolor: '#008F0A'
+    },
+    { 
+      id: 6, 
+      name: '바질', 
+      image: basilImg,
+      bgimage: flourImg_bg,
+      technique: 'ReAct 기법',
+      description: '여섯번째 방법론에 대해 알려드리겠습니다.',
+      color: '#24A73C',
+      tagcolor: '#1CD83E'
+    }
+  ]
 
   return (
     <div 
@@ -63,13 +127,13 @@ const ChatGPTTutorial = () => {
       <Navigation />
 
       {/* Main Content */}
-      <div className="relative z-10 pt-20"> {/* pt-24에서 pt-20으로 줄임 */}
+      <div className="relative z-10 pt-20">
         {/* ChatGPT Title - 네비게이터 바로 밑에 위치 */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex justify-center mb-4" // mb-8에서 mb-4로 줄임
+          className="flex justify-center mb-4"
         >
           <div
             style={{
@@ -102,31 +166,31 @@ const ChatGPTTutorial = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="mx-2" // mx-4에서 mx-2로 줄임
+          className="mx-2"
           style={{
-            width: 'calc(100% - 16px)', // mx-2를 고려한 너비 계산
-            height: 'calc(100vh - 190px)', // 네비게이션과 타이틀을 제외한 높이
+            width: 'calc(100% - 16px)',
+            height: 'calc(100vh - 190px)',
             background: 'transparent',
             border: 'none',
-            padding: '10px', // 20px에서 10px로 줄임
+            padding: '10px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}
         >
           {/* 세 개의 투명 컨테이너 */}
-          <div className="flex justify-between items-center w-full max-w-screen-xl"> {/* justify-center에서 justify-between으로, 전체 너비 사용 */}
+          <div className="flex justify-between items-center w-full max-w-screen-xl">
             {/* 첫 번째 컨테이너 (좌측 재료들) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                width: '240px',      // 250px에서 240px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '240px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '15px',     // 20px에서 15px로 줄임
+                padding: '15px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -140,6 +204,8 @@ const ChatGPTTutorial = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + (index * 0.2) }}
+                  onClick={() => handleIngredientClick(ingredient)}
+                  className="cursor-pointer"
                 >
                   <IngredientCard 
                     name={ingredient.name}
@@ -156,11 +222,11 @@ const ChatGPTTutorial = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
               style={{
-                width: '1200px',      // 600px에서 550px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '1200px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '30px',     // 40px에서 30px로 줄임
+                padding: '30px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -172,12 +238,12 @@ const ChatGPTTutorial = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.0 }}
-                className="text-center mb-4" // mb-8에서 mb-6으로 줄임
+                className="text-center mb-4"
               >
                 <p
                   style={{
                     fontFamily: 'Pretendard, sans-serif',
-                    fontSize: '24px',    // 26px에서 24px로 줄임
+                    fontSize: '24px',
                     color: '#000000',
                     fontWeight: '500',
                     textShadow: '1px 1px 2px rgba(255, 255, 255, 0.8)'
@@ -193,13 +259,13 @@ const ChatGPTTutorial = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="mb-4" // mb-8에서 mb-6으로 줄임
+                className="mb-4"
               >
                 <img 
                   src={basketImg} 
                   alt="Shopping Basket" 
                   style={{ width: '1200px', height: '400px' }}
-                  className="object-contain" // w-52 h-52에서 w-72 h-72로 크게 키움
+                  className="object-contain"
                 />
               </motion.div>
 
@@ -213,7 +279,7 @@ const ChatGPTTutorial = () => {
                 <p
                   style={{
                     fontFamily: 'Pretendard, sans-serif',
-                    fontSize: '16px',    // 18px에서 16px로 줄임
+                    fontSize: '16px',
                     color: '#FFFFFF',
                     lineHeight: '1.5',
                     textAlign: 'center',
@@ -232,11 +298,11 @@ const ChatGPTTutorial = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                width: '240px',      // 250px에서 240px로 줄임
-                height: '100%',      // 부모 높이에 맞춤
+                width: '240px',
+                height: '100%',
                 background: 'transparent',
                 border: 'none',
-                padding: '15px',     // 20px에서 15px로 줄임
+                padding: '15px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -250,12 +316,13 @@ const ChatGPTTutorial = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.8 + (index * 0.2) }}
+                  onClick={() => handleIngredientClick(ingredient)}
+                  className="cursor-pointer"
                 >
                   <IngredientCard 
                     name={ingredient.name}
                     image={ingredient.image}
                   />
-
                   <div style={{height:'10px'}}></div>
                 </motion.div>
               ))}
@@ -264,51 +331,20 @@ const ChatGPTTutorial = () => {
         </motion.div>
       </div>
 
-      {/* Loading Screen Overlay */}
-      {showLoading && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 flex items-center justify-center z-50"
-        >
-          <div className="flex space-x-4">
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0,
-              }}
-            />
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0.2,
-              }}
-            />
-            <motion.div
-              className="w-6 h-6 bg-white rounded-full shadow-lg"
-              animate={{
-                y: [-20, 0, -20],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: 0.4,
-              }}
-            />
-          </div>
-        </motion.div>
-      )}
+      {/* 학습 정보 모달 */}
+      <LearningInfoModal
+        isVisible={showModal}
+        aiInfo={chatGPTInfo}
+        onComplete={handleModalComplete}
+        duration={3000}
+      />
+
+      {/* 재료 모달 */}
+      <IngredientModal
+        isOpen={ingredientModalOpen}
+        onClose={handleIngredientModalClose}
+        ingredientData={selectedIngredient}
+      />
     </div>
   )
 }
