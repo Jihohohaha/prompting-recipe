@@ -48,7 +48,6 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 
-
 .main-button:hover {
   border-color: #a1a1aa !important; /* zinc-400 */
 }
@@ -63,46 +62,43 @@ body { margin: 0; }
 @layer utilities {
   /* 4단계 텍스트 그라데이션 애니메이션 (안전한 방법) */
   .text-gradient-four-stage {
-  display: inline-block;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  background-image: linear-gradient(
-    to bottom,
-    #FF6C43 0%,
-    #FFFFFF 100%
-  );
-  background-size: 100% 400%; /* 애니메이션에 필요한 크기만큼 그라데이션 확대 */
-  background-position: 0 100%; /* 그라데이션의 초기 위치 */
-  animation: fourStageGradientSafe var(--duration, 4s) ease-out forwards;
-  animation-delay: var(--sd, 0ms);
-  p {
-    white-space: pre-wrap;
+    display: inline-block;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    background-image: linear-gradient(
+      to bottom,
+      #FF6C43 0%,
+      #FFFFFF 100%
+    );
+    background-size: 100% 400%; /* 애니메이션에 필요한 크기만큼 그라데이션 확대 */
+    background-position: 0 100%; /* 그라데이션의 초기 위치 */
+    animation: fourStageGradientSafe var(--duration, 4s) ease-out forwards;
+    animation-delay: var(--sd, 0ms);
+    p {
+      white-space: pre-wrap;
+    }
   }
-}
 
   @keyframes fourStageGradientSafe {
-  /* Stage 1: 흰색 (배경의 아래쪽에 흰색 그라데이션) */
-  0%, 25% {
-    background-position: 0 100%;
+    /* Stage 1: 흰색 (배경의 아래쪽에 흰색 그라데이션) */
+    0%, 25% {
+      background-position: 0 100%;
+    }
+    /* Stage 2: 흰색에서 주황색으로 변화 시작 (그라데이션이 위로 이동) */
+    50% {
+      background-position: 0 50%;
+    }
+    /* Stage 3: 주황색이 더 넓게 채워짐 (그라데이션이 더 위로 이동) */
+    75% {
+      background-position: 0 25%;
+    }
+    /* Stage 4: 최종 (주황색 그라데이션이 상단까지 채워짐) */
+    100% {
+      background-position: 0 0%;
+    }
   }
-  
-  /* Stage 2: 흰색에서 주황색으로 변화 시작 (그라데이션이 위로 이동) */
-  50% {
-    background-position: 0 50%;
-  }
-
-  /* Stage 3: 주황색이 더 넓게 채워짐 (그라데이션이 더 위로 이동) */
-  75% {
-    background-position: 0 25%;
-  }
-
-  /* Stage 4: 최종 (주황색 그라데이션이 상단까지 채워짐) */
-  100% {
-    background-position: 0 0%;
-  }
-}
 
   /* 폴백: 그라데이션이 지원되지 않을 때 */
   .text-gradient-four-stage-fallback {
@@ -141,11 +137,13 @@ body { margin: 0; }
     }
   }
 
+  /* 글자별 순차 지연용: StaggerFillText에서 --sd 넘김 */
   .reveal-stagger > span {
     display: inline-block;
+    animation-delay: var(--sd, 0ms);
   }
 
-  /* 기존 애니메이션 (필요시 사용) */
+  /* 기존 애니메이션 (글자별 순차 그라데이션에 사용) */
   .text-gradient-reveal {
     -webkit-background-clip: text;
     background-clip: text;
@@ -159,7 +157,9 @@ body { margin: 0; }
     background-repeat: no-repeat;
     background-size: 100% 200%;
     background-position: bottom;
-    animation: gradientReveal 2s ease-out forwards;
+    /* duration 커스터마이즈 지원 + 렌더링 힌트 */
+    animation: gradientReveal var(--duration, 2s) ease-out forwards;
+    will-change: background-position;
   }
 
   @keyframes gradientReveal {
@@ -174,5 +174,4 @@ body { margin: 0; }
   .animate-blink {
     animation: blink 1s step-end infinite;
   }
-
 }

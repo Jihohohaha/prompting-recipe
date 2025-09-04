@@ -64,3 +64,16 @@
 /* .barcode-cursor {
   cursor: url('/barcode-small.png'), auto;
 } */
+
+.cursor-scope,
+.cursor-scope * {
+  cursor: none !important;
+}
+
+/* 입력 계열은 I-beam 유지 */
+.cursor-scope input,
+.cursor-scope textarea,
+.cursor-scope select,
+.cursor-scope [contenteditable="true"] {
+  cursor: text !important;
+}

@@ -6,12 +6,14 @@ import IngredientCard from '../components/common/IngredientCard'
 import LearningInfoModal from '../components/common/LearningInfoModal'
 import IngredientModal from '../components/common/IngredientModal'
 import '../styles/App.css'
+import CustomPointer from '../components/common/CustomPointer'
+import barcode from '../assets/images/barcode.png'
 
 // 이미지 imports - public 폴더 경로로 수정
 const backgroundImg = '/src/assets/images/chatgpt-tutorial-bg.png'
 const basketImg = '/src/assets/images/basket.png'
 const flourImg = '/src/assets/images/flour.png'
-const flourImg_bg='/src/assets/images/flour_bg.png'
+const flourImg_bg = '/src/assets/images/flour_bg.png'
 const tomatoImg = '/src/assets/images/tomato-halftone.png'
 const cheeseImg = '/src/assets/images/cheese-slice.png'
 const pepperoniImg = '/src/assets/images/pepperoni.png'
@@ -22,6 +24,9 @@ const ChatGPTTutorial = () => {
   const [showModal, setShowModal] = useState(false)
   const [ingredientModalOpen, setIngredientModalOpen] = useState(false)
   const [selectedIngredient, setSelectedIngredient] = useState(null)
+
+  // 모달 열림 상태면 커스텀 커서 비활성화
+  const customCursorEnabled = !(showModal || ingredientModalOpen)
 
   // ChatGPT 학습 정보
   const chatGPTInfo = {
@@ -114,17 +119,26 @@ const ChatGPTTutorial = () => {
   ]
 
   return (
-    <div 
-      className="w-full h-screen relative overflow-hidden"
-      style={{ 
+    <div
+      className={`w-full h-screen relative overflow-hidden ${customCursorEnabled ? 'cursor-scope' : ''}`}
+      style={{
         backgroundImage: `url(${backgroundImg})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        cursor: 'url(/barcode-small.png), crosshair'
+        backgroundPosition: 'center'
       }}
     >
       {/* Navigation */}
       <Navigation />
+
+      {/* 커스텀 포인터: 모달이 열려있지 않을 때만 활성화 */}
+      {customCursorEnabled && (
+        <CustomPointer
+          src={barcode}
+          size={160}
+          hotspot={[80, 80]}
+          hideNative={false}
+        />
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 pt-20">
@@ -205,13 +219,13 @@ const ChatGPTTutorial = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + (index * 0.2) }}
                   onClick={() => handleIngredientClick(ingredient)}
-                  className="cursor-pointer"
+                  className="cursor-[inherit]"
                 >
-                  <IngredientCard 
+                  <IngredientCard
                     name={ingredient.name}
                     image={ingredient.image}
                   />
-                  <div style={{height:'10px'}}></div>
+                  <div style={{ height: '10px' }}></div>
                 </motion.div>
               ))}
             </motion.div>
@@ -261,9 +275,9 @@ const ChatGPTTutorial = () => {
                 transition={{ duration: 0.8, delay: 1.2 }}
                 className="mb-4"
               >
-                <img 
-                  src={basketImg} 
-                  alt="Shopping Basket" 
+                <img
+                  src={basketImg}
+                  alt="Shopping Basket"
                   style={{ width: '1200px', height: '400px' }}
                   className="object-contain"
                 />
@@ -317,13 +331,13 @@ const ChatGPTTutorial = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.8 + (index * 0.2) }}
                   onClick={() => handleIngredientClick(ingredient)}
-                  className="cursor-pointer"
+                  className="cursor-[inherit]"
                 >
-                  <IngredientCard 
+                  <IngredientCard
                     name={ingredient.name}
                     image={ingredient.image}
                   />
-                  <div style={{height:'10px'}}></div>
+                  <div style={{ height: '10px' }}></div>
                 </motion.div>
               ))}
             </motion.div>

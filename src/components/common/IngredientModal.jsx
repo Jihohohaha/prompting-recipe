@@ -85,7 +85,7 @@ const IngredientModal = ({
             style={{ '--from': ingredientData?.color || '#ECE290' }}
             className="
               relative
-              w-[1000px] h-[700px]
+              w-[1000px] h-[90vh]
               overflow-hidden rounded-2xl shadow-2xl
               bg-gradient-to-b
               from-[var(--from)]
@@ -102,7 +102,7 @@ const IngredientModal = ({
               <img 
                 src={ingredientData.bgimage} 
                 alt="bgiamge" 
-                className="absolute w-[600px] h-auto bottom-[40vh] object-contain"
+                className="absolute w-[700px] h-auto left-1/2 -translate-x-1/2 bottom-[35vh] object-contain"
                 onError={(e) => {
                   e.target.style.display = 'none'
                 }}
@@ -147,7 +147,7 @@ const IngredientModal = ({
             </div>
 
             {/* 두 번째 컨테이너: 대화 영역 */}
-            <div className="h-[50vh] bg-transparent p-6 overflow-y-auto">
+            <div className="h-[45vh] bg-transparent p-6 overflow-y-auto">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <motion.div
@@ -197,24 +197,8 @@ const IngredientModal = ({
             </div>
 
             {/* 세 번째 컨테이너: 입력 영역 */}
-            <div className="h-20 bg-transparent flex items-end px-6">
-              <div className="flex-1 flex items-center space-x-3">
-                {/* 재료 아이콘 */}
-                <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                  {ingredientData?.image ? (
-                    <img 
-                      src={ingredientData.image} 
-                      alt="ingredient" 
-                      className="w-6 h-6 object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none'
-                      }}
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-xs">🥣</span>
-                  )}
-                </div>
-                
+            <div className="h-[20vh] bg-transparent flex items-center px-6">
+              <div className="flex-1 flex items-center space-x-3">                
                 {/* 입력창 */}
                 <div className="flex-1 relative">
                   <input
@@ -223,7 +207,7 @@ const IngredientModal = ({
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="비어 있는 말풍선을 채워주세요."
-                    className="w-full px-4 py-3 bg-gray-100 rounded-full border-none outline-none text-sm placeholder-gray-500"
+                    className="w-full px-4 py-3 bg-gray-100 rounded-full border-none outline-none text-sm text-black placeholder-gray-500"
                   />
                 </div>
 
