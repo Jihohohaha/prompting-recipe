@@ -1,4 +1,4 @@
-// src/components/layout/Navigation.jsx (문법 오류 수정)
+// src/components/layout/Navigation.jsx
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
@@ -36,9 +36,13 @@ const Navigation = () => {
   }
 
   const handleLogout = async () => {
-    await logout()
-    setShowProfileMenu(false)
-    navigate('/')
+    try {
+      await logout()
+      setShowProfileMenu(false)
+      // 로그아웃 후에도 현재 페이지에 머무름 (기존 동작 유지)
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+    }
   }
 
   // 사용자 이름의 첫 글자를 가져오는 함수
