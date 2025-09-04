@@ -1,7 +1,6 @@
 // src/pages/MainPage.jsx
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import FourStageFillText from "../components/common/FourStageFillText";
 import MosaicBubble from "../components/common/MosaicBubble";
 import TypingText from "../components/common/TypingText";
@@ -11,9 +10,6 @@ import BlurCrossfade from "../components/common/BlurCrossfade";
 export default function MainPage() {
   const navigate = useNavigate();
   const videoRef = useRef(null);
-  
-  // OAuth 로그인 상태 추가
-  const { user, isAuthenticated } = useAuth();
 
   // 초기 오버레이(제목/버튼) 표시 상태
   const [overlayGone, setOverlayGone] = useState(false);
@@ -61,12 +57,7 @@ export default function MainPage() {
 
   // 트랜지션 완료 후 페이지 이동
   const handleTransitionComplete = () => {
-    navigate('/tutorial-gpt'); // 또는 원하는 다른 페이지
-  };
-
-  // 로그인 페이지로 이동
-  const handleLoginClick = () => {
-    navigate('/login');
+    navigate('/select-field');
   };
 
   return (
@@ -121,31 +112,6 @@ export default function MainPage() {
         aria-hidden="true"
       />
 
-      {/* OAuth 로그인 상태 표시 - 우상단 (오버레이가 있을 때만) */}
-      {!overlayGone && (
-        <div className="absolute top-6 right-6 z-30 flex items-center gap-4">
-          {isAuthenticated ? (
-            // 로그인한 사용자 정보
-            <div className="flex items-center gap-3 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-              <span className="text-white text-sm font-medium">
-                {user?.name || '사용자'}님
-              </span>
-            </div>
-          ) : (
-            // 로그인 버튼
-            <button
-              onClick={handleLoginClick}
-              className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all duration-300 border border-white/20"
-            >
-              로그인하기
-            </button>
-          )}
-        </div>
-      )}
-
       {/* 메인 베너 - 화면 중앙에 위치 */}
       <div
         className={[
@@ -183,45 +149,36 @@ export default function MainPage() {
         <div className="flex flex-col items-center gap-6">
           <TypingText
             text="AI는 재료고, 사용자가 요리사다. 프롬프트 엔지니어링은 레시피다.<br />좋은 레시피로 요리를 해야 좋은 음식이 나온다."
-            className="text-white text-center text-lg font-light max-w-4xl"
-            typingSpeed={50}
+            className="text-white text-[16px] max-w-[90vw] text-center font-pretendard"
+            typingSpeed={100}
+            blinkSpeed={100}
+            initialBlinkCount={12}
           />
           
-          {/* 시작 버튼에 로그인 상태 반영 */}
-          <button
-            onClick={handlePlay}
-            className="pointer-events-auto bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-3 rounded-full text-lg font-medium hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            {isAuthenticated ? `${user?.name || '사용자'}님, 시작하기` : '시작하기'}
-          </button>
-
-          {/* 로그인하지 않은 사용자를 위한 안내 텍스트 */}
-          {!isAuthenticated && (
-            <p className="text-white/80 text-sm text-center mt-2">
-              로그인하지 않아도 모든 학습 콘텐츠를 이용할 수 있습니다.<br />
-              개인화 서비스를 원하시면 로그인해주세요.
-            </p>
-          )}
+          <div className="pointer-events-auto">
+            <button
+              type="button"
+              onClick={handlePlay}
+              className="main-button px-4 py-2 rounded-full border bg-zinc-300 border-zinc-300 text-black
+                        hover:bg-zinc-400 hover:scale-105
+                        active:scale-95 transition 
+                        font-pretendard"
+            >
+              요리를 시작해볼까요?
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 모자이크 버블 - 마우스 추적 */}
-      {mosaicActive && (
-        <MosaicBubble
-          x={mouse.x}
-          y={mouse.y}
-          size={200}
-          className="z-15"
-        />
-      )}
+      {/* 자연스러운 블러 크로스페이드 트랜지션 */}
+      <BlurCrossfade 
+        isActive={showTransition}
+        onComplete={handleTransitionComplete}
+        duration={1.5} // 1.5초로 자연스럽게
+      />
 
-      {/* 트랜지션 컴포넌트 */}
-      {showTransition && (
-        <BlurCrossfade
-          onComplete={handleTransitionComplete}
-          className="z-50"
-        />
-      )}
+      {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
+      {mosaicActive && <MosaicBubble mouseX={mouse.x} mouseY={mouse.y} />}
     </div>
   );
 }
