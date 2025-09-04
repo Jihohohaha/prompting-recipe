@@ -1,10 +1,10 @@
 // src/pages/MainPage.jsx
 import { useRef, useState, memo, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import MosaicBubble from "../components/common/MosaicBubble";
 import TypingText from "../components/common/TypingText";
 import IngredientOnCircle from "../components/common/IngredientOnCircle";
 import BlurCrossfade from "../components/common/BlurCrossfade";
+import PixelateBubble from "../components/common/PixelateBubble";
 
 /* 글자별 순차 그라데이션 */
 const StaggerFillText = memo(function StaggerFillText({
@@ -223,8 +223,25 @@ export default function MainPage() {
         duration={1.5}
       />
 
-      {/* 커서 따라다니는 모자이크(블러) 버블 — 재생 전만 표시 */}
-      {mosaicActive && <MosaicBubble mouseX={mouse.x} mouseY={mouse.y} />}
+      {/* 커서 픽셀화 버블 — 재생 전만 표시 */}
+      {mosaicActive && (
+        <PixelateBubble
+          videoRef={videoRef}
+          mouseX={mouse.x}
+          mouseY={mouse.y}
+          shape="diamond"     // 마름모
+          radius={50}         // 기본 크기
+          pixelSize={14}      // 픽셀 크기
+          feather={18}        // 가장자리 부드럽게
+          follow={0.18}       // 부드럽게 따라오기
+          speedGain={0.35}    // 속도에 따른 반경 가산
+          maxAdd={22}         // 가산 상한
+          active
+          zIndex={15}
+          overlayAlpha={0.7}  // 덮개와 동일
+        />
+      )}
+
     </div>
   );
 }
