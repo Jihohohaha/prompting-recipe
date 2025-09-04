@@ -235,6 +235,7 @@ class ApiService {
   /**
    * 백엔드 연결 테스트
    */
+  
   async testConnection() {
     try {
       const testEndpoints = ['/']
