@@ -80,8 +80,9 @@ export default function CustomPointer({
       // ✅ 화면 좌표를 left/top으로 갱신 (이것 때문에 -9999에서 벗어남)
       el.style.left = `${pos.current.x}px`;
       el.style.top  = `${pos.current.y}px`;
-      // ✅ 핫스팟/클릭 효과는 transform으로만
-      el.style.transform = `translate(${-hotspot[0]}px, ${-hotspot[1]}px) scale(${pressedRef.current ? 0.96 : 1})`;
+      // 3D 살짝(회전축 기울임)
+      el.style.transform = `translate(${-hotspot[0]}px, ${-hotspot[1]}px) perspective(600px) rotateZ(${pressedRef.current ? '-10deg' : '0deg'}) rotateX(${pressedRef.current ? '-8deg' : '0deg'}) scale(${pressedRef.current ? 0.96 : 1})`;
+
       // ✅ 가시성은 ref로
       el.style.opacity = visibleRef.current ? "1" : "0";
     }

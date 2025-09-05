@@ -36,6 +36,18 @@ const ChatGPTTutorial = () => {
     tips: "구체적인 질문을 하고, 이해가 안 되는 부분은 다시 질문하세요. '예시를 들어 설명해줘'라고 요청하면 더 쉽게 이해할 수 있습니다."
   }
 
+  // 드래그/텍스트 선택 방지
+  useEffect(() => {
+    const preventDrag = (e) => e.preventDefault();
+    const preventSelect = (e) => e.preventDefault();
+    document.addEventListener('dragstart', preventDrag, { passive: false });
+    document.addEventListener('selectstart', preventSelect, { passive: false });
+    return () => {
+      document.removeEventListener('dragstart', preventDrag);
+      document.removeEventListener('selectstart', preventSelect);
+    };
+  }, []);
+
   useEffect(() => {
     // 페이지 로드 즉시 모달 표시
     setShowModal(true)
@@ -120,7 +132,7 @@ const ChatGPTTutorial = () => {
 
   return (
     <div
-      className={`w-full h-screen relative overflow-hidden ${customCursorEnabled ? 'cursor-scope' : ''}`}
+      className={`w-full h-screen relative overflow-hidden select-none touch-none ${customCursorEnabled ? 'cursor-scope' : ''}`}
       style={{
         backgroundImage: `url(${backgroundImg})`,
         backgroundSize: 'cover',
@@ -297,7 +309,6 @@ const ChatGPTTutorial = () => {
                     color: '#FFFFFF',
                     lineHeight: '1.5',
                     textAlign: 'center',
-                    textShadow: '1px 1px 3px rgba(0, 0, 0, 0.7)'
                   }}
                 >
                   최소 3개의 재료를 모아야, 퀴즈를 풀 수 있습니다!<br />
