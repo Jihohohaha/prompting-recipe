@@ -3,6 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    @apply font-sans antialiased;
+  }
+}
 /* 폰트 */
 @font-face {
   font-family: "StretchPro";
@@ -181,11 +186,5 @@ body { margin: 0; }
 
   .animate-blink {
     animation: blink 1s step-end infinite;
-  }
-}
-
-@layer base {
-  html {
-    @apply font-sans antialiased;
   }
 }
