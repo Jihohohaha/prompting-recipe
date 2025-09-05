@@ -134,8 +134,8 @@ const ChatGPTTutorial = () => {
       {customCursorEnabled && (
         <CustomPointer
           src={barcode}
-          size={160}
-          hotspot={[80, 80]}
+          size={400}
+          hotspot={[160, 160]}
           hideNative={false}
         />
       )}
