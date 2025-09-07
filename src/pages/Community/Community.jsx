@@ -75,7 +75,7 @@ const Community = () => {
         <CommunityHeader />
 
         {/* 버튼들 */}
-        <div className="flex flex-col items-center space-y-8 w-full mt-12">
+        <div className="flex flex-col items-center space-y-0 w-full mt-6">
           {communityButtons.map((button, index) => (
             <CommunityButton
               key={button.id}

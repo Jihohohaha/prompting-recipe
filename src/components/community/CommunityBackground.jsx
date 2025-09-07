@@ -12,7 +12,7 @@ const CommunityBackground = ({ hoveredButton, communityButtons }) => {
       
       {/* 호버 시 변경되는 배경 이미지들 */}
       {communityButtons.map((button, index) => {
-        const opacities = [0.3, 0.3, 0.2] // 각각 90%, 90%, 70%
+        const opacities = [0.7, 1, 0.5] // 각각 90%, 90%, 70%
         return (
             <div
             key={`bg-${button.id}`}
@@ -29,12 +29,18 @@ const CommunityBackground = ({ hoveredButton, communityButtons }) => {
         )
        })}
       
-      {/* 오버레이 */}
+      {/* 오버레이
       <div 
         className="absolute inset-0 transition-opacity duration-700"
         style={{
           background: 'rgba(0, 0, 0, 0.4)',
           opacity: hoveredButton ? 1 : 0
+        }}
+      /> */}
+      <div
+        className="absolute inset-0 backdrop-blur-md transition-opacity duration-700"
+        style={{
+          opacity: hoveredButton ? 1 : 0,
         }}
       />
     </div>

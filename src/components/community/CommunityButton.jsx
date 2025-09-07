@@ -17,7 +17,7 @@ const CommunityButton = ({
       onMouseEnter={() => onMouseEnter(id)}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
-      className="group relative overflow-hidden bg-transparent text-gray-200/50 hover:text-[#FF6C43] text-7xl font-black transition-all duration-300 font-pretendard"
+      className="group relative overflow-hidden bg-transparent text-gray-200/50 hover:text-[#FF6C43] text-9xl font-black tracking-widest py-10 transition-all duration-300 font-pretendard"
     >
       
       {/* 텍스트 */}
