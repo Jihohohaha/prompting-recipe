@@ -14,6 +14,10 @@ import Creation from '../pages/Community/Creation'
 import LoginPage from '../pages/LoginPage'
 import MyPage from '../pages/MyPage'
 import AuthCallback from '../pages/AuthCallback'  // 새로 추가된 콜백 페이지
+import Community from '../pages/Community/Community'
+import MonthlyPrompting from '../pages/Community/MonthlyPrompting'
+import AIArticles from '../pages/Community/AIArticles'
+import AIGallery from '../pages/Community/AIGallery'
 
 // 로그인 필수 페이지 (개인화 기능이 필요한 페이지들)
 const ProtectedRoute = ({ children, isAuthenticated }) => {
@@ -61,7 +65,11 @@ const AppRouter = ({ isAuthenticated }) => {
       <Route path="/chatgpt-tutorial" element={<ChatGPTTutorial />} />
       <Route path="/community/information" element={<Information />} />
       <Route path="/community/creation" element={<Creation />} />
-
+      {/* 새로운 커뮤니티 페이지들 */}
+      <Route path="/community" element={<Community />} />
+      <Route path="/community/monthly-prompting" element={<MonthlyPrompting />} />
+      <Route path="/community/ai-articles" element={<AIArticles />} />
+      <Route path="/community/ai-gallery" element={<AIGallery />} />
       {/* 로그인 필수 페이지들 (개인화 기능만) */}
       <Route 
         path="/mypage" 

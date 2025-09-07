@@ -24,7 +24,7 @@ const Navigation = () => {
     { path: '/tutorial-gpt', label: '튜토리얼' },
     { path: '/select-field', label: '객관식 퀴즈' },
     { path: '/community/information', label: '주관식 퀴즈' },
-    { path: '/community/creation', label: '커뮤니티' }
+    { path: '/community', label: '커뮤니티' }
   ]
 
   const handleProfileClick = () => {
