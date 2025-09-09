@@ -7,7 +7,7 @@ import Navigation from '../components/layout/Navigation'
 import PageEnterTransition from '../components/common/PageEnterTransition'
 
 /* ===== Debug 토글 ===== */
-const DEBUG = false
+const DEBUG = 1
 const dbg = (cls) => (DEBUG ? cls : "")
 
 /* 배경 이미지 레이어 variants: enter 0.6s / leave 0.15s */
@@ -152,27 +152,29 @@ const SelectField = () => {
         <PageEnterTransition className={`w-full flex flex-col items-center justify-center px-8 ${dbg('border border-green-500/60')}`}>
 
           {/* 제목 */}
-          <div className={`flex flex-col h-[30vh] items-center ${dbg('border border-purple-500/60')}`}>
-            <motion.div 
-              className={`text-center ${dbg('border border-fuchsia-500/60')}`}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <h1 className={`text-white/15 text-[100px] font-pretendard font-bold mb-4 ${dbg('border border-indigo-500/60')}`}>
-                {hoveredCard?.title ?? "INSPIRATION"}
-              </h1>
-            </motion.div>
-            <motion.div 
-              className={`absolute flex h-[100px] items-center justify-center ${dbg('border border-fuchsia-500/60')}`}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
+          <div className={`relative flex flex-col h-[224px] items-center ${dbg('border border-purple-500/60')}`}>
+            <div className='relative flex flex-col items-center justify-center'>
+              <motion.div 
+                className={`flex h-[120px] items-center justify-center ${dbg('border border-fuchsia-500/60')}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <h1 className={`text-white/15 text-[100px] font-pretendard font-bold ${dbg('border border-indigo-500/60')}`}>
+                  {hoveredCard?.title ?? "INSPIRATION"}
+                </h1>
+              </motion.div>
+              <motion.div 
+                className={`absolute flex h-[100px] items-center justify-center ${dbg('border border-fuchsia-500/60')}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
               <h1 className={`text-white text-[40px] font-pretendard font-bold ${dbg('border border-indigo-500/60')}`}>
                 {hoveredCard?.subtitle ?? "어떤 영감이 필요하세요?"}
               </h1>
             </motion.div>
+          </div>
             <motion.p
               className={`text-white/90 w-[60vw] text-lg text-center drop-shadow-lg whitespace-pre-line ${dbg('border border-violet-500/60')}`}
               initial={{ opacity: 0 }}
