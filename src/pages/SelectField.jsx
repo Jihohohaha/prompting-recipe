@@ -7,7 +7,7 @@ import Navigation from '../components/layout/Navigation'
 import PageEnterTransition from '../components/common/PageEnterTransition'
 
 /* ===== Debug 토글 ===== */
-const DEBUG = 1
+const DEBUG = 0
 const dbg = (cls) => (DEBUG ? cls : "")
 
 /* 배경 이미지 레이어 variants: enter 0.6s / leave 0.15s */

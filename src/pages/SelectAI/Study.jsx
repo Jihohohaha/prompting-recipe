@@ -6,7 +6,7 @@ import Navigation from '../../components/layout/Navigation'
 import AICard from '../../components/common/AICard'
 import CircleExpandTransition from '../../components/common/CircleExpandTransition'
 
-const DEBUG = 1
+const DEBUG = 0
 const dbg = (cls) => (DEBUG ? cls : "")
 
 const Study = () => {
