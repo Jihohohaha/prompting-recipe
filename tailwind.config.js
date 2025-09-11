@@ -12,6 +12,13 @@ export default {
         neodgm: ['"Neodgm"', "monospace"],
         bromawo: ['"Bromawo"', "sans-serif"],
       },
+      spacing:{
+        '1/6':'16.666%',
+      },
+      rotate: {
+        '1.75': '1.75deg',
+        '-1.75': '-1.75deg',
+      },
     },
   },
   plugins: [],

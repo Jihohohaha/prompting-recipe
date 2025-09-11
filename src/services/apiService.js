@@ -252,6 +252,15 @@ class ApiService {
   async submitQuiz(quizId, answers) {
     return await this.post(`/quizzes/${quizId}/submit`, { answers })
   }
+
+  // ==================== 갤러리 관련 API ====================
+
+  /**
+   * 최근 갤러리 이미지 조회 (최대 10개)
+   */
+  async getRecentGalleryImages() {
+    return await this.get('/boards/gallery/recent')
+  }
 }
 
 // 싱글톤 패턴으로 인스턴스 생성
