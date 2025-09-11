@@ -53,17 +53,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FF2802 0%, #FF8A6A 100%);
+  background: black;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FF8A6A 0%, #FF2802 100%);
+  background: gray;
 }
-
-/* .barcode-cursor {
-  cursor: url('/barcode-small.png'), auto;
-} */
 
 .cursor-scope,
 .cursor-scope * {
