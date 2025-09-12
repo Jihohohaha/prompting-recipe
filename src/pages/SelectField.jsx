@@ -152,7 +152,7 @@ const SelectField = () => {
         <PageEnterTransition className={`w-full flex flex-col items-center justify-center px-8 ${dbg('border border-green-500/60')}`}>
 
           {/* 제목 */}
-          <div className={`relative flex flex-col h-[224px] items-center ${dbg('border border-purple-500/60')}`}>
+          <div className={`relative flex flex-col h-[280px] items-center ${dbg('border border-purple-500/60')}`}>
             <div className='relative flex flex-col items-center justify-center'>
               <motion.div 
                 className={`flex h-[120px] items-center justify-center ${dbg('border border-fuchsia-500/60')}`}
