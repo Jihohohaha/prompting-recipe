@@ -13,16 +13,50 @@ const AIGallery = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // 제목 생성 헬퍼 함수 - 프롬프트에서 의미있는 제목 추출
+  const generateTitleFromPrompt = (prompt) => {
+    if (!prompt || typeof prompt !== 'string') {
+      return 'UNTITLED'
+    }
+
+    // 프롬프트가 너무 짧으면 그대로 사용
+    if (prompt.length <= 15) {
+      return prompt.toUpperCase()
+    }
+
+    // 첫 번째 문장이나 쉼표 전까지 사용
+    const firstSentence = prompt.split(/[.!?]|,/)[0].trim()
+    
+    // 적절한 길이로 자르기 (10-20 글자 정도)
+    if (firstSentence.length > 20) {
+      return firstSentence.substring(0, 17).trim() + '...'
+    }
+
+    return firstSentence.toUpperCase()
+  }
+
+  // 사용된 AI를 기반으로 스타일 생성
+  const generateStyleFromAI = (usedAI) => {
+    if (!usedAI || !Array.isArray(usedAI)) {
+      return 'AI Generated'
+    }
+
+    const aiNames = usedAI.map(ai => ai.toUpperCase()).join(' + ')
+    return `${aiNames} Art`
+  }
+
   // 백엔드 데이터를 프론트엔드 형식으로 변환
   const transformBackendData = (backendData) => {
     return backendData.map(item => ({
-      id: item.board_id,
-      title: item.title,
-      artist: item.user.name,
+      id: item.gallery_board_id,
+      title: generateTitleFromPrompt(item.prompt),
+      artist: item.user?.name || '익명',
       image: item.images && item.images.length > 0 ? item.images[0].image_url : null,
-      prompt: item.content,
-      style: "AI Generated",
+      prompt: item.prompt || '프롬프트 정보가 없습니다.',
+      style: generateStyleFromAI(item.used_ai),
+      usedAI: item.used_ai || ['AI'],
       createdAt: item.created_at,
+      updatedAt: item.updated_at,
       user: item.user
     }))
   }
@@ -32,18 +66,36 @@ const AIGallery = () => {
     const fetchGalleryData = async () => {
       try {
         setLoading(true)
-        const response = await apiService.getRecentGalleryImages()
+        setError(null)
         
-        if (response.data && response.data.data) {
-          const transformedData = transformBackendData(response.data.data)
+        // 새로운 API 엔드포인트 사용
+        const response = await apiService.getGalleryBoards(1, 20) // 첫 페이지, 20개 항목
+        
+        console.log('API Response:', response.data)
+        
+        if (response.data && response.data.data && response.data.data.data) {
+          const transformedData = transformBackendData(response.data.data.data)
+          console.log('Transformed Data:', transformedData)
           setArtworks(transformedData)
         } else {
-          console.warn('Unexpected API response structure:', response.data)
+          console.warn('예상하지 못한 API 응답 구조:', response.data)
+          setError('데이터 형식이 예상과 다릅니다.')
           setArtworks([])
         }
       } catch (error) {
         console.error('갤러리 데이터 로드 실패:', error)
-        setError('갤러리 데이터를 불러오는데 실패했습니다.')
+        
+        // 에러 메시지 개선
+        if (error.response?.status === 404) {
+          setError('갤러리 API를 찾을 수 없습니다. 서버 상태를 확인해주세요.')
+        } else if (error.response?.status === 500) {
+          setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+        } else if (error.code === 'ECONNABORTED') {
+          setError('요청 시간이 초과되었습니다. 인터넷 연결을 확인해주세요.')
+        } else {
+          setError('갤러리 데이터를 불러오는데 실패했습니다.')
+        }
+        
         setArtworks([])
       } finally {
         setLoading(false)
@@ -61,12 +113,35 @@ const AIGallery = () => {
     setSelectedArtwork(null)
   }
 
+  const handleRefresh = () => {
+    window.location.reload()
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black relative overflow-hidden">
         <Navigation />
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white text-xl">갤러리를 불러오는 중...</div>
+          <div className="text-center">
+            <div className="text-white text-xl mb-4">갤러리를 불러오는 중...</div>
+            <div className="flex space-x-2 justify-center">
+              <motion.div
+                className="w-3 h-3 bg-red-600 rounded-full"
+                animate={{ y: [-10, 0, -10] }}
+                transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+              />
+              <motion.div
+                className="w-3 h-3 bg-red-600 rounded-full"
+                animate={{ y: [-10, 0, -10] }}
+                transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+              />
+              <motion.div
+                className="w-3 h-3 bg-red-600 rounded-full"
+                animate={{ y: [-10, 0, -10] }}
+                transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -77,14 +152,22 @@ const AIGallery = () => {
       <div className="min-h-screen bg-black relative overflow-hidden">
         <Navigation />
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
+          <div className="text-center max-w-md">
             <div className="text-red-500 text-xl mb-4">{error}</div>
-            <button 
-              onClick={() => window.location.reload()}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-              다시 시도
-            </button>
+            <div className="space-y-2">
+              <button 
+                onClick={handleRefresh}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors mr-2"
+              >
+                다시 시도
+              </button>
+              <Link 
+                to="/community"
+                className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                커뮤니티로 돌아가기
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -134,7 +217,7 @@ const AIGallery = () => {
             {/* 설명 텍스트 */}
             <div className="text-white text-lg font-pretendard leading-normal text-center">
               <p>
-                열심히 학습한 뒤 생성형 ai를 통해<br />
+                열심히 학습한 뒤 생성형 AI를 통해<br />
                 다양한 아트 결과물들을 만들어낼 수 있습니다.<br />
                 이제 그 결과물들을 갤러리에서 만나보세요 !<br />
                 프롬프트도 확인할 수 있답니다

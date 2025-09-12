@@ -3,7 +3,7 @@ import axios from 'axios'
 
 class ApiService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
     this.accessToken = null
     
     // Axios 인스턴스 생성
@@ -256,10 +256,48 @@ class ApiService {
   // ==================== 갤러리 관련 API ====================
 
   /**
-   * 최근 갤러리 이미지 조회 (최대 10개)
+   * 갤러리 보드 목록 조회 (새로운 API 엔드포인트)
+   * @param {number} page - 페이지 번호 (기본값: 1)
+   * @param {number} limit - 페이지당 항목 수 (기본값: 10)
+   */
+  async getGalleryBoards(page = 1, limit = 10) {
+    return await this.get(`/gallery-boards?page=${page}&limit=${limit}`)
+  }
+
+  /**
+   * 최근 갤러리 이미지 조회 (기존 호환성을 위해 유지)
    */
   async getRecentGalleryImages() {
-    return await this.get('/boards/gallery/recent')
+    // 새로운 API를 사용하되 첫 페이지만 가져옴
+    return await this.getGalleryBoards(1, 10)
+  }
+
+  /**
+   * 특정 갤러리 보드 조회
+   */
+  async getGalleryBoard(galleryBoardId) {
+    return await this.get(`/gallery-boards/${galleryBoardId}`)
+  }
+
+  /**
+   * 갤러리 보드 생성
+   */
+  async createGalleryBoard(galleryData) {
+    return await this.post('/gallery-boards', galleryData)
+  }
+
+  /**
+   * 갤러리 보드 수정
+   */
+  async updateGalleryBoard(galleryBoardId, galleryData) {
+    return await this.put(`/gallery-boards/${galleryBoardId}`, galleryData)
+  }
+
+  /**
+   * 갤러리 보드 삭제
+   */
+  async deleteGalleryBoard(galleryBoardId) {
+    return await this.delete(`/gallery-boards/${galleryBoardId}`)
   }
 }
 
