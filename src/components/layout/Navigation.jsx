@@ -56,9 +56,9 @@ const Navigation = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-transparent">
       {/* 좌측 로고/브랜드명 */}
-      <div className="flex items-center">
+      <Link to="/" className="flex items-center group" aria-label="홈으로 이동">
         <h1 
-          className="text-2xl font-bold"
+          className="text-2xl font-bold transition-transform group-hover:scale-105 cursor-pointer"
           style={{
             fontFamily: 'Michroma, monospace',
             fontWeight: 400,
@@ -72,7 +72,7 @@ const Navigation = () => {
         >
           {"{PROMPTING recipe}"}
         </h1>
-      </div>
+      </Link>
 
       {/* 우측 그룹 - 네비게이션 메뉴와 프로필 버튼 */}
       <div className="flex items-center">

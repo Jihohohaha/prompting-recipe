@@ -37,43 +37,44 @@ const SelectField = () => {
     { 
       id: 1, 
       title: 'ALL-IN-ONE',
-      subtitle: '올인원',
+      subtitle: '기본적인 AI 활용',
       path: '/select-ai/study',
       background: '/images/bg-comprehensive.png',
-      description: '예술, 공학, 글쓰기뿐 아니라 상담이나 일상 속 궁금증까지, 주제에 제한 없이 자유롭게 배우고 묻고 나눌 수 있는 공간입니다.\n모든 분야를 연결해 새로운 시각과 배움을 넓혀갈 수 있습니다.',
-      cardtitle: 'All-In-One',
-      cardsubtitle: '기본적인 AI 활용'
+      description: '퓨전 음식과 같이 다양한 기능이 종합된 AI를 활용하는 방법을 배우고 이를 활용해보세요!\n예술, 공학, 글쓰기뿐 아니라 상담이나 일상 속 궁금증까지, 주제에 제한 없이 자유롭게 배우고 묻고 나눌 수 있는 공간입니다.\n모든 분야를 연결해 새로운 시각과 배움을 넓혀갈 수 있습니다.',
+      cardtitle: 'Fusion',
+      cardsubtitle: '퓨전'
     },
     { 
       id: 2, 
       title: 'ART & CREATIVITY',
-      subtitle: '예술 & 창작',
+      subtitle: 'AI로 경험하는 예술과 창작',
       path: '/select-ai/art',
       background: '/images/bg-art.png',
-      description: "상상만 하던 장면이 눈앞에 그려지고, 떠오른 아이디어가 곧바로 디자인이 됩니다. 새로운 도구는 단순히 편리함을 넘어,\n창작의 즐거움을 더 크게 열어줍니다. 지금 여기서, 당신만의 방식으로 예술과 디자인을 펼쳐보세요.",
-      cardtitle: 'Art & Creativity',
-      cardsubtitle: 'AI로 경험하는 예술과 창작'
+      description: "화려하고 창의적인 양식의 세계에 오신 것을 환영합니다.\n상상만 하던 장면이 눈앞에 그려지고, 떠오른 아이디어가 곧바로 디자인이 됩니다. 새로운 도구는 단순히 편리함을 넘어,\n창작의 즐거움을 더 크게 열어줍니다. 지금 여기서, 당신만의 방식으로 예술과 디자인을 펼쳐보세요.",
+      cardtitle: 'Western',
+      cardsubtitle: '양식'
     },
     { 
       id: 3, 
       title: 'CODING & DEVELOPMENT',
-      subtitle: '프로그래밍 & 개발',
+      subtitle: '개발 협업자: AI',
       path: '/select-ai/search',
       background: '/images/bg-coding.png',
-      description: '전공자가 아니어도 괜찮습니다. 코딩은 생각보다 단순하고, 작은 시도만으로도 멋진 결과를 만들 수 있습니다.\n처음 시작하는 사람도 즐겁게 배울 수 있는 길을 열어드립니다.',
-      cardtitle: 'Coding & Development',
-      cardsubtitle: '개발과 프로그래밍을 위한 AI'
+      description: '정량적이고 순차적인 일식을 선택하셨습니다!\n전공자가 아니어도 괜찮습니다. 코딩은 생각보다 단순하고, 작은 시도만으로도 멋진 결과를 만들 수 있습니다.\n처음 시작하는 사람도 즐겁게 배울 수 있는 길을 열어드립니다.',
+      cardtitle: 'Japanese',
+      cardsubtitle: '일식'
     },
     { 
       id: 4, 
       title: 'ESSAY & WRITING', 
-      subtitle: '논술 & 글쓰기',
+      subtitle: 'AI와 같은 탄탄한 논리',
       path: '/select-ai',
       background: '/images/bg-write.png',
-      description: `생각을 단순히 떠올리는 데서 끝내지 않고, 논리와 근거를 통해 글로 풀어내며,
-      나만의 시각을 분명하게 표현합니다. 처음 쓰는 사람도 쉽게 따라오며, 글쓰기의 힘을 차근차근 키워갈 수 있습니다.`,
-      cardtitle: 'Essay & Writing',
-      cardsubtitle: 'AI와 함께하는 논술과 글쓰기'
+      description: `논리적이지만 때로는 감각적이며, 또 감성적인 한식은 어떠신가요?
+                    단순한 맛의 조합이 아닌, 깊은 생각과 근거를 담아내듯,
+                    AI는 사고를 글로 풀어내고 나만의 시각을 표현하는 힘을 길러줍니다.`,
+      cardtitle: 'Korean',
+      cardsubtitle: '한식'
     }
   ]
 
@@ -181,7 +182,7 @@ const SelectField = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              {hoveredCard?.description ?? "원하는 분야를 선택해 시작해보세요!\n아래의 원에 마우스를 올려 내용을 확인하세요."}
+              {hoveredCard?.description ?? "원하는 분야를 선택해 시작해보세요!\n아래의 원에 마우스를 올려 세부 내용을 확인하세요."}
             </motion.p>
           </div>
 

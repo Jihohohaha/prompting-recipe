@@ -1,5 +1,7 @@
-import { useRef, useState } from "react";
+// src/pages/MainPage.jsx
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import TypingText from "../components/common/TypingText";
 import BlurCrossfade from "../components/common/BlurCrossfade";
 import PixelateBubble from "../components/common/PixelateBubble";
@@ -7,7 +9,6 @@ import PixelateBubble from "../components/common/PixelateBubble";
 import MatrixRainOverlay from "../components/effects/MatrixRainOverlay";
 import HeroTitle from "../components/common/HeroTitle";
 import VideoStage from "../components/common/VideoStage";
-import CodeTypingOverlay from "../components/common/CodeTypingOverlay";
 import IngredientRing from "../components/common/IngredientRing";
 
 /* Debug */
@@ -21,7 +22,6 @@ export default function MainPage() {
   const [overlayGone, setOverlayGone] = useState(false);
   const [showCircle, setShowCircle] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
-  const [showCode, setShowCode] = useState(false);
 
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
   const mosaicActive = !overlayGone;
@@ -33,7 +33,41 @@ export default function MainPage() {
     { name: "apple", angle: 0, image: "/images/apple.png" },
   ];
 
-  const codeLines = [/* 네가 쓰던 codeLines 그대로 */];
+  // ====== 막판 페이드 아웃 오버레이 ======
+  const [fadeOpacity, setFadeOpacity] = useState(0);
+  const FADE_BEFORE_END_MS = 2500; // 영상 끝나기 2.5초 전부터 서서히 어두워짐
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const updateFade = () => {
+      const dur = Number.isFinite(v.duration) ? v.duration : 0;
+      const cur = v.currentTime ?? 0;
+      const remainingMs = Math.max(0, (dur - cur) * 1000);
+
+      if (dur > 0 && remainingMs <= FADE_BEFORE_END_MS) {
+        const t = 1 - remainingMs / FADE_BEFORE_END_MS; // 0→1
+        setFadeOpacity(Math.min(1, Math.max(0, t)));
+      } else {
+        setFadeOpacity(0);
+      }
+    };
+
+    const resetFade = () => setFadeOpacity(0);
+
+    v.addEventListener("timeupdate", updateFade);
+    v.addEventListener("seeking", updateFade);
+    v.addEventListener("loadedmetadata", resetFade);
+    v.addEventListener("play", resetFade);
+
+    return () => {
+      v.removeEventListener("timeupdate", updateFade);
+      v.removeEventListener("seeking", updateFade);
+      v.removeEventListener("loadedmetadata", resetFade);
+      v.removeEventListener("play", resetFade);
+    };
+  }, []);
 
   const handlePlay = async () => {
     const v = videoRef.current;
@@ -48,12 +82,10 @@ export default function MainPage() {
       await v.play();
     }
     setOverlayGone(true);
-    setShowCode(true);
   };
 
   const handleEnded = () => {
-    setShowCode(false);
-    setShowCircle(true);
+    setShowCircle(false);
     setTimeout(() => setShowTransition(true), 1200);
   };
 
@@ -68,32 +100,33 @@ export default function MainPage() {
       }}
       onMouseLeave={() => setMouse({ x: -9999, y: -9999 })}
     >
+      {/* 배경 영상 */}
       <VideoStage ref={videoRef} onEnded={handleEnded} />
 
+      {/* 매트릭스 레인 */}
       <MatrixRainOverlay
-        effect="binaryRain"          // 0/1로 비처럼 떨어짐
+        effect="binaryRain"
         maskSelector="#statue-hotspot"
         videoSelector="#bg-video"
         fontSize={14}
         density={16}
-        speed={1.0}                  // 전체 속도
-        trailLength={16}             // 꼬리 길이
-        curtainFill={true}           // 위에서부터 점점 활성
-        curtainDuration={3000}       // 커튼이 바닥까지 도달하는 시간
+        speed={1.0}
+        trailLength={16}
+        curtainFill={true}
+        curtainDuration={3000}
       />
 
-      {showCode && (
-        <CodeTypingOverlay lines={codeLines} speed={0.05} loop className="text-[40px]" />
-      )}
-
+      {/* 원형 가이드 (옵션) */}
       {showCircle && (
         <div className={`absolute inset-0 z-5 flex items-center justify-center ${dbg("border border-orange-500/60")}`}>
           <div className="w-[120vh] h-[120vh] border-4 border-orange-500 rounded-full" />
         </div>
       )}
 
+      {/* 재료 링 */}
       <IngredientRing items={ingredientPositions} radius={60} visible={showCircle} />
 
+      {/* 초기 블러/모자이크 덮개 (시작 버튼 누르면 서서히 사라짐) */}
       <div
         className={[
           `absolute inset-0 bg-black/70 z-10 transition-opacity duration-700 ease-out`,
@@ -103,8 +136,10 @@ export default function MainPage() {
         aria-hidden="true"
       />
 
+      {/* 히어로 타이틀 */}
       <HeroTitle visible={!overlayGone} />
 
+      {/* 시작 CTA */}
       <div
         className={[
           "pointer-events-none absolute inset-0 z-20 flex flex-col justify-end items-center pb-36",
@@ -134,8 +169,16 @@ export default function MainPage() {
         </div>
       </div>
 
+      {/* 영상 막판 페이드 오버레이 (끝나기 2.5초 전부터 어둡게) */}
+      <div
+        className="pointer-events-none absolute inset-0 z-40 transition-opacity duration-200 ease-linear"
+        style={{ background: "black", opacity: fadeOpacity }}
+      />
+
+      {/* 페이지 전환 블러 크로스페이드 */}
       <BlurCrossfade isActive={showTransition} onComplete={handleTransitionComplete} duration={1.5} />
 
+      {/* 픽셀레이트 버블 (초반 인터랙션용) */}
       {mosaicActive && (
         <PixelateBubble
           videoRef={videoRef}

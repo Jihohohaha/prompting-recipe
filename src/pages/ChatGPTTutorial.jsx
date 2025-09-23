@@ -10,11 +10,13 @@ import CustomPointer from '../components/common/CustomPointer'
 import barcode from '../assets/images/barcode.png'
 import backgroundImg from  '../assets/images/chatgpt-tutorial-bg.png'
 import basketImg from '../assets/images/basket.png'
-import  flourImg from '../assets/images/flour.png'
+import flourImg from '../assets/images/flour.png'
 import flourImg_bg from '../assets/images/flour_bg.png'
 import tomatoImg from '../assets/images/tomato-halftone.png'
+import tomatoImg_bg from '../assets/images/tomato_bg.png'
 import cheeseImg from '../assets/images/cheese-slice.png'
 import pepperoniImg from '../assets/images/pepperoni.png'
+import pepperoniImg_bg from '../assets/images/pepperoni_bg.png'
 import oliveImg from '../assets/images/olive.png'
 import basilImg from '../assets/images/basil.png'
 // 이미지 imports - public 폴더 경로로 수정
@@ -90,7 +92,7 @@ const ChatGPTTutorial = () => {
       id: 2, 
       name: '토마토', 
       image: tomatoImg,
-      bgimage: flourImg_bg,
+      bgimage: tomatoImg_bg,
       technique: '역할 지정 기법',
       description: '두번째 방법론에 대해 알려드리겠습니다.',
       color: '#DD7B25',
@@ -110,7 +112,7 @@ const ChatGPTTutorial = () => {
       id: 4, 
       name: '페퍼로니', 
       image: pepperoniImg,
-      bgimage: flourImg_bg,
+      bgimage: pepperoniImg_bg,
       technique: '마크다운 템플릿 2',
       description: '네번째 방법론에 대해 알려드리겠습니다.',
       color: '#BD4728',
